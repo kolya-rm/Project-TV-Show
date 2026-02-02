@@ -16,8 +16,8 @@ function makePageForEpisodes(episodeList) {
 function createEpisodeCard(parent, template, data) {
   const card = template.content.cloneNode(true);
   const episodeCode = createEpisodeCode(data);
-  
-  createEpisodeCardTitle(card, data);
+
+  createEpisodeCardTitle(card, data, episodeCode);
   createEpisodeCardImage(card, data);
   createEpisodeCardSummary(card, data);
   
@@ -27,9 +27,9 @@ function createEpisodeCode(data) {
   return `S${String(data.season).padStart(2, "0")}E${String(data.number).padStart(2, "0")}`;
 }
 
-function createEpisodeCardTitle(card, data) {
+function createEpisodeCardTitle(card, data, code) {
   const titleElement = card.querySelector(".episode-card-title h3");
-  titleElement.textContent = data.name;
+  titleElement.textContent = `${data.name} - ${code}`;
 }
 
 function createEpisodeCardImage(card, data) {
