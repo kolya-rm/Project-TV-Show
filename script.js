@@ -16,9 +16,15 @@ function makePageForEpisodes(episodeList) {
 function createEpisodeCard(parent, template, data) {
   const card = template.content.cloneNode(true);
   
+  createEpisodeCardTitle(card, data);
   createEpisodeCardImage(card, data);
   
   parent.append(card);
+}
+
+function createEpisodeCardTitle(card, data) {
+  const titleElement = card.querySelector(".episode-card-title h3");
+  titleElement.textContent = data.name;
 }
 
 function createEpisodeCardImage(card, data) {
