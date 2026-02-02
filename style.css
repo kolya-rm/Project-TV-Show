@@ -10,7 +10,7 @@
   margin: auto;
 }
 
-.card {
+.episode-card {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -19,7 +19,7 @@
   border-radius: 10px;
 }
 
-.card-title {
+.episode-card-title {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,7 +28,7 @@
   border-radius: 10px;
 }
 
-.card-image {
+.episode-card-image {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,7 +37,7 @@
   margin-bottom: 30px;
 }
 
-.card-summary {
+.episode-card-summary {
   display: flex;
   flex-direction: column;
   align-items: center;
