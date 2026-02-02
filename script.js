@@ -41,7 +41,11 @@ function createEpisodeCardImage(card, data, code) {
 
 function createEpisodeCardSummary(card, data) {
   const summaryElement = card.querySelector(".episode-card-summary p");
-  summaryElement.textContent = data.summary;
+  summaryElement.textContent = removeTags(data.summary);
+}
+
+function removeTags(text) {
+  return text.replace(/<[^>]*>/g, "");
 }
 
 window.onload = setup;
