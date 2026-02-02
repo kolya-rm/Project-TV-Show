@@ -24,6 +24,7 @@ function createEpisodeCard(parent, template, data) {
   createEpisodeCardTitle(card, data, episodeCode);
   createEpisodeCardImage(card, data, episodeCode);
   createEpisodeCardSummary(card, data);
+  createEpisodeCardSummaryLink(card, data);
   
   parent.append(card);
 }
@@ -48,8 +49,13 @@ function createEpisodeCardSummary(card, data) {
   summaryElement.textContent = removeTags(data.summary);
 }
 
+function createEpisodeCardSummaryLink(card, data) {
+  const linkElement = card.querySelector(".summary-link a");
+  linkElement.href = updateProtocol(data.url);
+}
+
 function updateProtocol(url) {
-  if (url.indexOf(HTTPS_PROTOCOL_PREFIX) < 0) {
+  if (url.indexOf(HTTP_PROTOCOL_PREFIX) === 0 && url.indexOf(HTTPS_PROTOCOL_PREFIX) < 0) {
     return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
   }
   return url;
