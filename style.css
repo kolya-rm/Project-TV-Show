@@ -17,6 +17,7 @@
   width: 300px;
   background-color: whitesmoke;
   border-radius: 10px;
+  margin-bottom: 50px;
 }
 
 .episode-card-title {
@@ -26,6 +27,13 @@
   align-content: center;
   border: 2px, solid, darkgray;
   border-radius: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 5em;
+}
+
+.episode-card-title h3 {
+  text-align: center;
 }
 
 .episode-card-image {
