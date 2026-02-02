@@ -9,8 +9,9 @@ function makePageForEpisodes(episodeList) {
   // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
   const episodeCardTemplate = document.querySelector("#episode-card-template");
   const rootElement = document.querySelector("#root");
-
-  createEpisodeCard(rootElement, episodeCardTemplate, episodeList[0]);
+  for (const episodeData of episodeList) {
+    createEpisodeCard(rootElement, episodeCardTemplate, episodeData);
+  }
 }
 
 function createEpisodeCard(parent, template, data) {
