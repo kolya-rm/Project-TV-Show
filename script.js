@@ -18,6 +18,7 @@ function createEpisodeCard(parent, template, data) {
   
   createEpisodeCardTitle(card, data);
   createEpisodeCardImage(card, data);
+  createEpisodeCardSummary(card, data);
   
   parent.append(card);
 }
@@ -30,6 +31,11 @@ function createEpisodeCardTitle(card, data) {
 function createEpisodeCardImage(card, data) {
   const imageElement = card.querySelector(".episode-card-image img");
   imageElement.src = data.image.medium;
+}
+
+function createEpisodeCardSummary(card, data) {
+  const summaryElement = card.querySelector(".episode-card-summary p");
+  summaryElement.textContent = data.summary;
 }
 
 window.onload = setup;
