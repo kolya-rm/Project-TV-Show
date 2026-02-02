@@ -18,11 +18,12 @@ function createEpisodeCard(parent, template, data) {
   const episodeCode = createEpisodeCode(data);
 
   createEpisodeCardTitle(card, data, episodeCode);
-  createEpisodeCardImage(card, data);
+  createEpisodeCardImage(card, data, episodeCode);
   createEpisodeCardSummary(card, data);
   
   parent.append(card);
 }
+
 function createEpisodeCode(data) {
   return `S${String(data.season).padStart(2, "0")}E${String(data.number).padStart(2, "0")}`;
 }
@@ -32,9 +33,10 @@ function createEpisodeCardTitle(card, data, code) {
   titleElement.textContent = `${data.name} - ${code}`;
 }
 
-function createEpisodeCardImage(card, data) {
+function createEpisodeCardImage(card, data, code) {
   const imageElement = card.querySelector(".episode-card-image img");
   imageElement.src = data.image.medium;
+  imageElement.alt = `Episode ${data.name} - ${code} image`;
 }
 
 function createEpisodeCardSummary(card, data) {
