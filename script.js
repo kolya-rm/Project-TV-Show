@@ -44,10 +44,7 @@ function renderEpisodeCards(episodeList) {
 function renderEpisodeCard(episode) {
   const card = document.getElementById("episode-card-template").content.cloneNode(true);
 
-  const code = getEpisodeCode(episode);
-
-  card.querySelector(".episode-card-title h3").textContent =
-    `${episode.name} - ${code}`;
+  renderCardTitle(card, episode);
 
   const image = card.querySelector(".episode-card-image img");
   image.src = fixProtocol(episode.image.medium);
@@ -60,6 +57,12 @@ function renderEpisodeCard(episode) {
     fixProtocol(episode.url);
 
   root.append(card);
+}
+
+function renderCardTitle(card, episode) {
+  const code = getEpisodeCode(episode);
+
+  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
 }
   
 function getEpisodeCode(episode) {
