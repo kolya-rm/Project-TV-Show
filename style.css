@@ -4,6 +4,7 @@ body {
   align-items: center;
   margin-top: 0px;
 }
+
 header {
   height: 150px;
   width: 100%;
@@ -13,11 +14,13 @@ header {
   font-size: large;
   position: fixed;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
-main {
-  padding-top: 150px;
+#episode-select {
+  width: 400px;
+  height: 30px;
+  margin-left: 20px;
 }
 
 #search-input {
@@ -25,6 +28,10 @@ main {
   height: 30px;
   font-size: large;
   margin-right: 20px;
+}
+
+main {
+  padding-top: 150px;
 }
 
 #root {
