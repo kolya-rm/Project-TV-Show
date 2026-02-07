@@ -47,9 +47,7 @@ function renderEpisodeCard(episode) {
   renderCardTitle(card, episode);
   renderCardImage(card, episode);
   renderCardSummary(card, episode);
-
-  card.querySelector(".summary-link a").href =
-    fixProtocol(episode.url);
+  renderCardLink(card, episode);
 
   root.append(card);
 }
@@ -62,12 +60,16 @@ function renderCardTitle(card, episode) {
 
 function renderCardImage(card, episode) {
   const image = card.querySelector(".episode-card-image img");
-  image.src = fixProtocol(episode.image.medium);
+  image.src = updateProtocol(episode.image.medium);
   image.alt = `${episode.name} image`;
 }
 
 function renderCardSummary(card, episode) {
   card.querySelector(".summary-text").textContent = removeTags(episode.summary);
+}
+
+function renderCardLink(card, episode) {
+  card.querySelector(".summary-link a").href = updateProtocol(episode.url);
 }
   
 function getEpisodeCode(episode) {
@@ -80,7 +82,7 @@ function removeTags(text) {
   return text.replace(/<[^>]*>/g, "");
 }
 
-function fixProtocol(url) {
+function updateProtocol(url) {
   if (url.startsWith(HTTP_PROTOCOL_PREFIX)) {
     return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
   }
