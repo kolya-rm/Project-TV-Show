@@ -10,8 +10,25 @@
 
   <body>
     <header>
-    </header>
+  <div class="controls">
+    <label>
+      Search:
+      <input type="search" id="search-input" placeholder="Search episodes..." />
+    </label>
+
+    <p id="search-label"></p>
+  </div>
+</header>
+
+    <div class="search-wrapper">
+      <label for="search">Search Films</label>
+      <input type="search" id="search">
+    </div>
     <template id="episode-card-template">
+      <div class="card">
+        <div class="header" data-header></div>
+        <div class="body" data-body></div>
+      </div>
       <div class="episode-card">
         <div class="episode-card-title">
           <h3></h3>

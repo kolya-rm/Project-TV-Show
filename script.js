@@ -1,68 +1,84 @@
-//You can edit ALL of the code here
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 
+let allEpisodes = [];
+
 function setup() {
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  allEpisodes = getAllEpisodes();
+  setupSearch();
+  render(allEpisodes); // first render all episodes
 }
 
-function makePageForEpisodes(episodeList) {
-  // const rootElem = document.getElementById("root");
-  // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
-  const episodeCardTemplate = document.querySelector("#episode-card-template");
-  const rootElement = document.querySelector("#root");
-  for (const episodeData of episodeList) {
-    createEpisodeCard(rootElement, episodeCardTemplate, episodeData);
-  }
+function setupSearch() {
+  const searchInput = document.getElementById("search-input");
+
+  searchInput.addEventListener("input", (event) => { // input update immediately after each keystroke
+    const searchTerm = event.target.value.toLowerCase();
+
+    const filteredEpisodes = allEpisodes.filter((episode) => {
+      return (
+        episode.name.toLowerCase().includes(searchTerm) ||
+        removeTags(episode.summary).toLowerCase().includes(searchTerm)
+      );
+    });
+
+    render(filteredEpisodes);
+  });
 }
 
-function createEpisodeCard(parent, template, data) {
-  const card = template.content.cloneNode(true);
-  const episodeCode = createEpisodeCode(data);
-
-  createEpisodeCardTitle(card, data, episodeCode);
-  createEpisodeCardImage(card, data, episodeCode);
-  createEpisodeCardSummary(card, data);
-  createEpisodeCardSummaryLink(card, data);
-  
-  parent.append(card);
+function render(episodeList) {
+  renderSearchLabel(episodeList);
+  renderEpisodeCards(episodeList);
 }
 
-function createEpisodeCode(data) {
-  return `S${String(data.season).padStart(2, "0")}E${String(data.number).padStart(2, "0")}`;
+function renderSearchLabel(episodeList) {
+  const label = document.getElementById("search-label");
+  label.textContent = `Displaying ${episodeList.length}/${allEpisodes.length} episode(s)`;
 }
 
-function createEpisodeCardTitle(card, data, code) {
-  const titleElement = card.querySelector(".episode-card-title h3");
-  titleElement.textContent = `${data.name} - ${code}`;
+function renderEpisodeCards(episodeList) {
+  const root = document.getElementById("root");
+  const template = document.getElementById("episode-card-template");
+
+  root.innerHTML = "";
+
+  episodeList.forEach((episode) => {
+    const card = template.content.cloneNode(true);
+
+    const code = getEpisodeCode(episode);
+
+    card.querySelector(".episode-card-title h3").textContent =
+      `${episode.name} - ${code}`;
+
+    const image = card.querySelector(".episode-card-image img");
+    image.src = fixProtocol(episode.image.medium);
+    image.alt = `${episode.name} image`;
+
+    card.querySelector(".summary-text").textContent =
+      removeTags(episode.summary);
+
+    card.querySelector(".summary-link a").href =
+      fixProtocol(episode.url);
+
+    root.append(card);
+  });
 }
 
-function createEpisodeCardImage(card, data, code) {
-  const imageElement = card.querySelector(".episode-card-image img");
-  imageElement.src = updateProtocol(data.image.medium);
-  imageElement.alt = `Episode ${data.name} - ${code} image`;
-}
-
-function createEpisodeCardSummary(card, data) {
-  const summaryElement = card.querySelector(".episode-card-summary p");
-  summaryElement.textContent = removeTags(data.summary);
-}
-
-function createEpisodeCardSummaryLink(card, data) {
-  const linkElement = card.querySelector(".summary-link a");
-  linkElement.href = updateProtocol(data.url);
-}
-
-function updateProtocol(url) {
-  if (url.indexOf(HTTP_PROTOCOL_PREFIX) === 0 && url.indexOf(HTTPS_PROTOCOL_PREFIX) < 0) {
-    return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
-  }
-  return url;
+function getEpisodeCode(episode) {
+  return `S${String(episode.season).padStart(2, "0")}E${String(
+    episode.number
+  ).padStart(2, "0")}`;
 }
 
 function removeTags(text) {
   return text.replace(/<[^>]*>/g, "");
+}
+
+function fixProtocol(url) {
+  if (url.startsWith(HTTP_PROTOCOL_PREFIX)) {
+    return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
+  }
+  return url;
 }
 
 window.onload = setup;
