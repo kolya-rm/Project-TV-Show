@@ -12,18 +12,18 @@ function setup() {
 function setupSearch() {
   const searchInput = document.getElementById("search-input");
 
-  searchInput.addEventListener("input", (event) => { // input update immediately after each keystroke
-    const searchTerm = event.target.value.toLowerCase();
+  searchInput.addEventListener("input", onSearchInput);
+}
 
-    const filteredEpisodes = allEpisodes.filter((episode) => {
-      return (
-        episode.name.toLowerCase().includes(searchTerm) ||
-        removeTags(episode.summary).toLowerCase().includes(searchTerm)
-      );
-    });
+function onSearchInput(event) {
+  const searchTerm = event.target.value.toLowerCase();
 
-    render(filteredEpisodes);
-  });
+  const filteredEpisodes = allEpisodes.filter(episode =>
+      episode.name.toLowerCase().includes(searchTerm) ||
+      episode.summary.toLowerCase().includes(searchTerm)
+  );
+
+  render(filteredEpisodes);
 }
 
 function render(episodeList) {
