@@ -25,16 +25,10 @@
     </template>
     <header>
       <div class="controls">
-        <label>
-          Search:
-          <input
-            type="search"
-            id="search-input"
-            placeholder="Search episodes..."
-          />
-        </label>
-
-        <p id="search-label"></p>
+        <div class="select">
+          <input id="search-input" name="search-input" placeholder="Search episodes..."/>
+          <label id="search-label" for="search-input">Search:</label>
+        </div>
       </div>
     </header>
     <main>
