@@ -37,33 +37,31 @@ function renderSearchLabel(episodeList) {
 }
 
 function renderEpisodeCards(episodeList) {
-  const root = document.getElementById("root");
-  const template = document.getElementById("episode-card-template");
-
   root.innerHTML = "";
-
-  episodeList.forEach((episode) => {
-    const card = template.content.cloneNode(true);
-
-    const code = getEpisodeCode(episode);
-
-    card.querySelector(".episode-card-title h3").textContent =
-      `${episode.name} - ${code}`;
-
-    const image = card.querySelector(".episode-card-image img");
-    image.src = fixProtocol(episode.image.medium);
-    image.alt = `${episode.name} image`;
-
-    card.querySelector(".summary-text").textContent =
-      removeTags(episode.summary);
-
-    card.querySelector(".summary-link a").href =
-      fixProtocol(episode.url);
-
-    root.append(card);
-  });
+  episodeList.forEach(renderEpisodeCard);
 }
 
+function renderEpisodeCard(episode) {
+  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+
+  const code = getEpisodeCode(episode);
+
+  card.querySelector(".episode-card-title h3").textContent =
+    `${episode.name} - ${code}`;
+
+  const image = card.querySelector(".episode-card-image img");
+  image.src = fixProtocol(episode.image.medium);
+  image.alt = `${episode.name} image`;
+
+  card.querySelector(".summary-text").textContent =
+    removeTags(episode.summary);
+
+  card.querySelector(".summary-link a").href =
+    fixProtocol(episode.url);
+
+  root.append(card);
+}
+  
 function getEpisodeCode(episode) {
   return `S${String(episode.season).padStart(2, "0")}E${String(
     episode.number
