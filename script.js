@@ -46,9 +46,7 @@ function renderEpisodeCard(episode) {
 
   renderCardTitle(card, episode);
   renderCardImage(card, episode);
-
-  card.querySelector(".summary-text").textContent =
-    removeTags(episode.summary);
+  renderCardSummary(card, episode);
 
   card.querySelector(".summary-link a").href =
     fixProtocol(episode.url);
@@ -66,6 +64,10 @@ function renderCardImage(card, episode) {
   const image = card.querySelector(".episode-card-image img");
   image.src = fixProtocol(episode.image.medium);
   image.alt = `${episode.name} image`;
+}
+
+function renderCardSummary(card, episode) {
+  card.querySelector(".summary-text").textContent = removeTags(episode.summary);
 }
   
 function getEpisodeCode(episode) {
