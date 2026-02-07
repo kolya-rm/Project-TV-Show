@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,21 +9,6 @@
   </head>
 
   <body>
-    <header>
-  <div class="controls">
-    <label>
-      Search:
-      <input type="search" id="search-input" placeholder="Search episodes..." />
-    </label>
-
-    <p id="search-label"></p>
-  </div>
-</header>
-
-    <div class="search-wrapper">
-      <label for="search">Search Films</label>
-      <input type="search" id="search">
-    </div>
     <template id="episode-card-template">
       <div class="card">
         <div class="header" data-header></div>
@@ -34,7 +19,7 @@
           <h3></h3>
         </div>
         <div class="episode-card-image">
-          <img src="" alt=""/>
+          <img src="" alt="" />
         </div>
         <div class="episode-card-summary">
           <p class="summary-text"></p>
@@ -42,13 +27,27 @@
         </div>
       </div>
     </template>
-    <main>
-      <div id="root">      
+    <header>
+      <div class="controls">
+        <label>
+          Search:
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Search episodes..."
+          />
+        </label>
+
+        <p id="search-label"></p>
       </div>
+    </header>
+    <main>
+      <div id="root"></div>
     </main>
     <footer>
       <p>
-        All data get from TVmaze. <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
+        All data get from TVmaze.
+        <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
       </p>
     </footer>
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
