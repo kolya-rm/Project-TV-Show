@@ -3,10 +3,11 @@ const HTTPS_PROTOCOL_PREFIX = "https://";
 
 let allEpisodes = [];
 
+//region prepare
 function setup() {
   allEpisodes = getAllEpisodes();
   setupSearch();
-  render(allEpisodes); // first render all episodes
+  render(allEpisodes);
 }
 
 function setupSearch() {
@@ -14,7 +15,10 @@ function setupSearch() {
 
   searchInput.addEventListener("input", onSearchInput);
 }
+//endregion
 
+
+//region event listeners
 function onSearchInput(event) {
   const searchTerm = event.target.value.toLowerCase();
 
@@ -25,7 +29,10 @@ function onSearchInput(event) {
 
   render(filteredEpisodes);
 }
+//endregion
 
+
+//region render
 function render(episodeList) {
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
@@ -71,11 +78,12 @@ function renderCardSummary(card, episode) {
 function renderCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url);
 }
+//endregion
   
+
+//region utils
 function getEpisodeCode(episode) {
-  return `S${String(episode.season).padStart(2, "0")}E${String(
-    episode.number
-  ).padStart(2, "0")}`;
+  return `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
 }
 
 function removeTags(text) {
@@ -88,5 +96,6 @@ function updateProtocol(url) {
   }
   return url;
 }
+//endregion
 
 window.onload = setup;
