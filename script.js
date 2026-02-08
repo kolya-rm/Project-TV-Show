@@ -2,6 +2,8 @@ const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
+const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
+const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
 
 let allEpisodes = [];
 
@@ -17,11 +19,12 @@ function setupEpisodes() {
   showDataLoadingMessage();
   fetch(EPISODES_LIST_URL)
     .then(response => response.json())
+    .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
       .then(data => {
         allEpisodes = data;
         render(allEpisodes);
-      }
-  );   
+      })
+      .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));   
 }
 
 function setupEpisodeSelect() {
