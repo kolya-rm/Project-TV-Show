@@ -55,7 +55,8 @@ function render(episodeList) {
 
 function renderSearchLabel(episodeList) {
   const label = document.getElementById("search-label");
-  label.textContent = `Displaying ${episodeList.length}/${allEpisodes.length} episode(s)`;
+  label.textContent = `Displaying ${episodeList.length}/${allEpisodes.length} 
+    episode${episodeList.length > 2 ? "s" : ""}`;
 }
 
 function renderEpisodeCards(episodeList) {
