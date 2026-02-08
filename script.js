@@ -48,9 +48,20 @@ function onSearchInput(event) {
 
 //region render
 function render(episodeList) {
+  renderEpisodeSelect(episodeList);
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
-  renderEpisodeSelect(episodeList);
+}
+
+function renderEpisodeSelect(episodeList) {
+  const selectElement = document.getElementById("episode-select");
+
+  selectElement.options.length = 0;
+
+  episodeList.forEach((episode) => {
+    const code = getEpisodeCode(episode);
+    selectElement.add(new Option(`${code} – ${episode.name}`, code));
+  });
 }
 
 function renderSearchLabel(episodeList) {
@@ -65,23 +76,21 @@ function renderEpisodeCards(episodeList) {
 }
 
 function renderEpisodeCard(episode) {
-  const card = document
-    .getElementById("episode-card-template")
-    .content.cloneNode(true);
+  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+
+  card.querySelector(".episode-card").id = getEpisodeCode(episode);
 
   renderCardTitle(card, episode);
   renderCardImage(card, episode);
   renderCardSummary(card, episode);
   renderCardLink(card, episode);
-
+  
   root.append(card);
 }
 
 function renderCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
-
-  card.querySelector(".episode-card-title h3").textContent =
-    `${episode.name} - ${code}`;
+  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
 }
 
 function renderCardImage(card, episode) {
@@ -96,17 +105,6 @@ function renderCardSummary(card, episode) {
 
 function renderCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url);
-}
-
-function renderEpisodeSelect(episodeList) {
-  const selectElement = document.getElementById("episode-select");
-
-  selectElement.options.length = 0;
-
-  episodeList.forEach((episode) => {
-    const code = getEpisodeCode(episode);
-    selectElement.add(new Option(`${code} – ${episode.name}`, code));
-  });
 }
 //endregion
 
