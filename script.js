@@ -1,3 +1,4 @@
+const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 
@@ -6,12 +7,19 @@ let allEpisodes = [];
 
 //region prepare
 function setup() {
-  allEpisodes = getAllEpisodes();
-
   setupEpisodeSelect();
   setupSearchInput();
-  
-  render(allEpisodes);
+  setupEpisodes();
+}
+
+function setupEpisodes() {
+  fetch(EPISODES_LIST_URL)
+    .then(response => response.json())
+      .then(data => {
+        allEpisodes = data;
+        render(allEpisodes);
+      }
+  );   
 }
 
 function setupEpisodeSelect() {
