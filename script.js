@@ -1,6 +1,7 @@
 const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
+const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
 
 let allEpisodes = [];
 
@@ -13,6 +14,7 @@ function setup() {
 }
 
 function setupEpisodes() {
+  showDataLoadingMessage();
   fetch(EPISODES_LIST_URL)
     .then(response => response.json())
       .then(data => {
@@ -119,6 +121,12 @@ function renderCardLink(card, episode) {
 
 
 //region utils
+function showDataLoadingMessage() {
+  const messageElement = document.createElement("h1");
+  messageElement.textContent = DATA_LOADING_MESSAGE;
+  root.append(messageElement);
+}
+
 function getEpisodeCode(episode) {
   return `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
 }
