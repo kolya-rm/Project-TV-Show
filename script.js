@@ -3,33 +3,42 @@ const HTTPS_PROTOCOL_PREFIX = "https://";
 
 let allEpisodes = [];
 
+
 //region prepare
 function setup() {
   allEpisodes = getAllEpisodes();
+
   setupEpisodeSelect();
   setupSearchInput();
+  
   render(allEpisodes);
 }
 
 function setupEpisodeSelect() {
-  document.getElementById("search-input").addEventListener("input", onSearchInput);
+  document.getElementById("episode-select").addEventListener("input", onSelectInput);
 }
 
 function setupSearchInput() {
-  const searchInput = document.getElementById("search-input");
-
-  searchInput.addEventListener("input", onSearchInput);
+  document.getElementById("search-input").addEventListener("input", onSearchInput);
 }
 //endregion
 
 
 //region event listeners
+function onSelectInput(event) {
+  document.getElementById(event.target.value).scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
 function onSearchInput(event) {
   const searchTerm = event.target.value.toLowerCase();
 
-  const filteredEpisodes = allEpisodes.filter(episode =>
+  const filteredEpisodes = allEpisodes.filter(
+    (episode) =>
       episode.name.toLowerCase().includes(searchTerm) ||
-      episode.summary.toLowerCase().includes(searchTerm)
+      episode.summary.toLowerCase().includes(searchTerm),
   );
 
   render(filteredEpisodes);
@@ -55,7 +64,9 @@ function renderEpisodeCards(episodeList) {
 }
 
 function renderEpisodeCard(episode) {
-  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+  const card = document
+    .getElementById("episode-card-template")
+    .content.cloneNode(true);
 
   renderCardTitle(card, episode);
   renderCardImage(card, episode);
@@ -68,7 +79,8 @@ function renderEpisodeCard(episode) {
 function renderCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
 
-  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
+  card.querySelector(".episode-card-title h3").textContent =
+    `${episode.name} - ${code}`;
 }
 
 function renderCardImage(card, episode) {
@@ -96,7 +108,7 @@ function renderEpisodeSelect(episodeList) {
   });
 }
 //endregion
-  
+
 
 //region utils
 function getEpisodeCode(episode) {
@@ -114,5 +126,6 @@ function updateProtocol(url) {
   return url;
 }
 //endregion
+
 
 window.onload = setup;
