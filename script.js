@@ -38,7 +38,8 @@ function onSearchInput(event) {
   const filteredEpisodes = allEpisodes.filter(
     (episode) =>
       episode.name.toLowerCase().includes(searchTerm) ||
-      episode.summary.toLowerCase().includes(searchTerm),
+      episode.summary.toLowerCase().includes(searchTerm) ||
+      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm)
   );
 
   render(filteredEpisodes);
