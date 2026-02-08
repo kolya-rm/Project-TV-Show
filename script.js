@@ -6,11 +6,16 @@ let allEpisodes = [];
 //region prepare
 function setup() {
   allEpisodes = getAllEpisodes();
-  setupSearch();
+  setupEpisodeSelect();
+  setupSearchInput();
   render(allEpisodes);
 }
 
-function setupSearch() {
+function setupEpisodeSelect() {
+  document.getElementById("search-input").addEventListener("input", onSearchInput);
+}
+
+function setupSearchInput() {
   const searchInput = document.getElementById("search-input");
 
   searchInput.addEventListener("input", onSearchInput);
