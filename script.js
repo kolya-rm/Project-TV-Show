@@ -3,8 +3,10 @@ const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 
 function setup() {
+
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+
 }
 
 function makePageForEpisodes(episodeList) {
