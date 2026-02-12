@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,15 +9,13 @@
   </head>
 
   <body>
-    <header>
-    </header>
     <template id="episode-card-template">
       <div class="episode-card">
         <div class="episode-card-title">
           <h3></h3>
         </div>
         <div class="episode-card-image">
-          <img src="" alt=""/>
+          <img src="" alt="" />
         </div>
         <div class="episode-card-summary">
           <p class="summary-text"></p>
@@ -25,6 +23,7 @@
         </div>
       </div>
     </template>
+<<<<<<< HEAD
     <main>
       <div id="root">  
         <label id="label1"></label>
@@ -37,15 +36,27 @@
 <!--   <div id="episodes"></div>
  -->
 
+=======
+    <header>
+      <div class="select">
+        <label for="episode">Episode:</label>
+        <select id="episode-select" name="episode"></select>
+      </div>
+       <div class="search">
+        <input id="search-input" name="search-input" placeholder="Search episodes..."/>
+        <label id="search-label" for="search-input">Search:</label>
+      </div>
+    </header>
+    <main>
+      <div id="root"></div>
+>>>>>>> upstream/main
     </main>
     <footer>
       <p>
-        All data get from TVmaze. <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
+        All data get from TVmaze.
+        <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
       </p>
     </footer>
-    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
-
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
   </body>

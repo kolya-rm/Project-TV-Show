@@ -1,70 +1,157 @@
-//You can edit ALL of the code here
+const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
+const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
+const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
+const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
 
+let allEpisodes = [];
+
+
+//region prepare
 function setup() {
+<<<<<<< HEAD
 
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
 
+=======
+  setupEpisodeSelect();
+  setupSearchInput();
+  setupEpisodes();
+>>>>>>> upstream/main
 }
 
-function makePageForEpisodes(episodeList) {
-  // const rootElem = document.getElementById("root");
-  // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
-  const episodeCardTemplate = document.querySelector("#episode-card-template");
-  const rootElement = document.querySelector("#root");
-  for (const episodeData of episodeList) {
-    createEpisodeCard(rootElement, episodeCardTemplate, episodeData);
-  }
+function setupEpisodes() {
+  showDataLoadingMessage();
+  fetch(EPISODES_LIST_URL)
+    .then(response => response.json())
+    .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
+      .then(data => {
+        allEpisodes = data;
+        render(allEpisodes);
+      })
+      .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));   
 }
 
-function createEpisodeCard(parent, template, data) {
-  const card = template.content.cloneNode(true);
-  const episodeCode = createEpisodeCode(data);
+function setupEpisodeSelect() {
+  document.getElementById("episode-select").addEventListener("input", onSelectInput);
+}
 
-  createEpisodeCardTitle(card, data, episodeCode);
-  createEpisodeCardImage(card, data, episodeCode);
-  createEpisodeCardSummary(card, data);
-  createEpisodeCardSummaryLink(card, data);
+function setupSearchInput() {
+  document.getElementById("search-input").addEventListener("input", onSearchInput);
+}
+//endregion
+
+
+//region event listeners
+function onSelectInput(event) {
+  document.getElementById(event.target.value).scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
+function onSearchInput(event) {
+  const searchTerm = event.target.value.toLowerCase();
+
+  const filteredEpisodes = allEpisodes.filter(
+    (episode) =>
+      episode.name.toLowerCase().includes(searchTerm) ||
+      episode.summary.toLowerCase().includes(searchTerm) ||
+      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm)
+  );
+
+  render(filteredEpisodes);
+}
+//endregion
+
+
+//region render
+function render(episodeList) {
+  renderEpisodeSelect(episodeList);
+  renderSearchLabel(episodeList);
+  renderEpisodeCards(episodeList);
+}
+
+function renderEpisodeSelect(episodeList) {
+  const selectElement = document.getElementById("episode-select");
+
+  selectElement.options.length = 0;
+
+  episodeList.forEach((episode) => {
+    const code = getEpisodeCode(episode);
+    selectElement.add(new Option(`${code} – ${episode.name}`, code));
+  });
+}
+
+function renderSearchLabel(episodeList) {
+  const label = document.getElementById("search-label");
+  label.textContent = `Displaying ${episodeList.length}/${allEpisodes.length} 
+    episode${episodeList.length > 2 ? "s" : ""}`;
+}
+
+function renderEpisodeCards(episodeList) {
+  root.innerHTML = "";
+  episodeList.forEach(renderEpisodeCard);
+}
+
+function renderEpisodeCard(episode) {
+  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+
+  card.querySelector(".episode-card").id = getEpisodeCode(episode);
+
+  renderCardTitle(card, episode);
+  renderCardImage(card, episode);
+  renderCardSummary(card, episode);
+  renderCardLink(card, episode);
   
-  parent.append(card);
+  root.append(card);
 }
 
-function createEpisodeCode(data) {
-  return `S${String(data.season).padStart(2, "0")}E${String(data.number).padStart(2, "0")}`;
+function renderCardTitle(card, episode) {
+  const code = getEpisodeCode(episode);
+  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
 }
 
-function createEpisodeCardTitle(card, data, code) {
-  const titleElement = card.querySelector(".episode-card-title h3");
-  titleElement.textContent = `${data.name} - ${code}`;
+function renderCardImage(card, episode) {
+  const image = card.querySelector(".episode-card-image img");
+  image.src = updateProtocol(episode.image.medium);
+  image.alt = `${episode.name} image`;
 }
 
-function createEpisodeCardImage(card, data, code) {
-  const imageElement = card.querySelector(".episode-card-image img");
-  imageElement.src = updateProtocol(data.image.medium);
-  imageElement.alt = `Episode ${data.name} - ${code} image`;
+function renderCardSummary(card, episode) {
+  card.querySelector(".summary-text").textContent = removeTags(episode.summary);
 }
 
-function createEpisodeCardSummary(card, data) {
-  const summaryElement = card.querySelector(".episode-card-summary p");
-  summaryElement.textContent = removeTags(data.summary);
+function renderCardLink(card, episode) {
+  card.querySelector(".summary-link a").href = updateProtocol(episode.url);
+}
+//endregion
+
+
+//region utils
+function showDataLoadingMessage() {
+  const messageElement = document.createElement("h1");
+  messageElement.textContent = DATA_LOADING_MESSAGE;
+  root.append(messageElement);
 }
 
-function createEpisodeCardSummaryLink(card, data) {
-  const linkElement = card.querySelector(".summary-link a");
-  linkElement.href = updateProtocol(data.url);
-}
-
-function updateProtocol(url) {
-  if (url.indexOf(HTTP_PROTOCOL_PREFIX) === 0 && url.indexOf(HTTPS_PROTOCOL_PREFIX) < 0) {
-    return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
-  }
-  return url;
+function getEpisodeCode(episode) {
+  return `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
 }
 
 function removeTags(text) {
   return text.replace(/<[^>]*>/g, "");
 }
+
+function updateProtocol(url) {
+  if (url.startsWith(HTTP_PROTOCOL_PREFIX)) {
+    return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
+  }
+  return url;
+}
+//endregion
+
 
 window.onload = setup;
