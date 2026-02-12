@@ -6,6 +6,9 @@ const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later."
 const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
 
 let allEpisodes = [];
+const root = document.getElementById("root"); // Root container where all episode cards will be rendered
+
+
 
 
 //region prepare
@@ -52,7 +55,7 @@ function onSearchInput(event) {
   const filteredEpisodes = allEpisodes.filter(
     (episode) =>
       episode.name.toLowerCase().includes(searchTerm) ||
-      episode.summary.toLowerCase().includes(searchTerm) ||
+      (episode.summary || "").toLowerCase().includes(searchTerm) || // Use an empty string if summary is null to avoid runtime errors
       getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm)
   );
 
