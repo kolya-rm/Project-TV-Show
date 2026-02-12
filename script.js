@@ -10,16 +10,10 @@ let allEpisodes = [];
 
 //region prepare
 function setup() {
-<<<<<<< HEAD
 
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
-
-=======
   setupEpisodeSelect();
   setupSearchInput();
   setupEpisodes();
->>>>>>> upstream/main
 }
 
 function setupEpisodes() {
