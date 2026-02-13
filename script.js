@@ -1,4 +1,5 @@
 const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
+const SHOWS_LIST_URL = "https://api.tvmaze.com/shows"
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
@@ -13,11 +14,14 @@ const root = document.getElementById("root"); // Root container where all episod
 
 //region prepare
 function setup() {
-
+  setupShows() {}
   setupEpisodeSelect();
   setupSearchInput();
   setupEpisodes();
 }
+
+function setupShows() {}
+
 
 function setupEpisodes() {
   showDataLoadingMessage();
