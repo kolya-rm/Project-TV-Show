@@ -1,49 +1,66 @@
 const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
-const SHOWS_LIST_URL = "https://api.tvmaze.com/shows"
+const SHOWS_LIST_URL = "https://api.tvmaze.com/shows";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
-const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
+const DATA_LOADING_ERROR_MESSAGE =
+  "Connection is lost. Please try again later.";
 const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
 
 let allEpisodes = [];
+let allShows = [];
+let selectedShowId = null;
+
 const root = document.getElementById("root"); // Root container where all episode cards will be rendered
-
-
-
 
 //region prepare
 function setup() {
-  setupShows() {}
+  setupShows();
+  setupShowSelect();
   setupEpisodeSelect();
   setupSearchInput();
-  setupEpisodes();
+  //setupEpisodes();
 }
 
-function setupShows() {}
+function setupShows() {
+  const showSelect = document.getElementById("show-select");
+  showDataLoadingMessage();
+  fetch(SHOWS_LIST_URL)
+    .then((response) => response.json())
+    .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
+    .then((data) => {
+      allShows = data;
+      render(allShows);
 
+
+    })
+    .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));
+}
 
 function setupEpisodes() {
   showDataLoadingMessage();
   fetch(EPISODES_LIST_URL)
-    .then(response => response.json())
+    .then((response) => response.json())
     .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
-      .then(data => {
-        allEpisodes = data;
-        render(allEpisodes);
-      })
-      .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));   
+    .then((data) => {
+      allEpisodes = data;
+      render(allEpisodes);
+    })
+    .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));
 }
 
 function setupEpisodeSelect() {
-  document.getElementById("episode-select").addEventListener("input", onSelectInput);
+  document
+    .getElementById("episode-select")
+    .addEventListener("input", onSelectInput);
 }
 
 function setupSearchInput() {
-  document.getElementById("search-input").addEventListener("input", onSearchInput);
+  document
+    .getElementById("search-input")
+    .addEventListener("input", onSearchInput);
 }
 //endregion
-
 
 //region event listeners
 function onSelectInput(event) {
@@ -60,13 +77,12 @@ function onSearchInput(event) {
     (episode) =>
       episode.name.toLowerCase().includes(searchTerm) ||
       (episode.summary || "").toLowerCase().includes(searchTerm) || // Use an empty string if summary is null to avoid runtime errors
-      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm)
+      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm),
   );
 
   render(filteredEpisodes);
 }
 //endregion
-
 
 //region render
 function render(episodeList) {
@@ -74,6 +90,16 @@ function render(episodeList) {
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
 }
+
+function setupShowSelect() {
+  const showSelect = document.getElementById("show-select");
+  showSelect.addEventListener("change", onShowChange);
+}
+
+function onShowChange(event) {
+  selectedShowId = Number(event.target.value);
+}
+
 
 function renderEpisodeSelect(episodeList) {
   const selectElement = document.getElementById("episode-select");
@@ -98,7 +124,9 @@ function renderEpisodeCards(episodeList) {
 }
 
 function renderEpisodeCard(episode) {
-  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+  const card = document
+    .getElementById("episode-card-template")
+    .content.cloneNode(true);
 
   card.querySelector(".episode-card").id = getEpisodeCode(episode);
 
@@ -106,13 +134,14 @@ function renderEpisodeCard(episode) {
   renderCardImage(card, episode);
   renderCardSummary(card, episode);
   renderCardLink(card, episode);
-  
+
   root.append(card);
 }
 
 function renderCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
-  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
+  card.querySelector(".episode-card-title h3").textContent =
+    `${episode.name} - ${code}`;
 }
 
 function renderCardImage(card, episode) {
@@ -129,7 +158,6 @@ function renderCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url);
 }
 //endregion
-
 
 //region utils
 function showDataLoadingMessage() {
@@ -153,6 +181,5 @@ function updateProtocol(url) {
   return url;
 }
 //endregion
-
 
 window.onload = setup;
