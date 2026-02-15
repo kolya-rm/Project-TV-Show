@@ -6,12 +6,13 @@ body {
 }
 
 header {
-  height: 150px;
+  height: 100px;
   width: 100%;
-  background-color: white;
+  background-color: rgb(221, 218, 233);
   display: flex;
-  flex-direction: row;
-  font-size: large;
+  gap: 1rem;             
+  padding: 1rem;
+  font-size: 1rem;
   position: fixed;
   align-items: center;
   justify-content: space-evenly;
