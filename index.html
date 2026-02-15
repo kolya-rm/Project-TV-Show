@@ -1,54 +1,55 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TV Show Project | Niko (kolya-rm)</title>
-    <link href="style.css" rel="stylesheet" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-  </head>
 
-  <body>
-    <template id="episode-card-template">
-      <div class="episode-card">
-        <div class="episode-card-title">
-          <h3></h3>
-        </div>
-        <div class="episode-card-image">
-          <img src="" alt="" />
-        </div>
-        <div class="episode-card-summary">
-          <p class="summary-text"></p>
-          <p class="summary-link">View episode on <a href="">TVMaze</a></p>
-        </div>
-      </div>
-    </template>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TV Show Project | Niko (kolya-rm)</title>
+  <link href="style.css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+</head>
 
-    <header>
-      <div class="select">
-        <label for="episode">Episode:</label>
-        <select id="episode-select" name="episode"></select>
+<body>
+  <template id="episode-card-template">
+    <div class="episode-card">
+      <div class="episode-card-title">
+        <h3></h3>
       </div>
-      <div class="show-select">
-        <label for="show-select">Show:</label>
-        <select id="show-select" name="show"></select>
+      <div class="episode-card-image">
+        <img src="" alt="" />
       </div>
-      
-       <div class="search">
-        <input id="search-input" name="search-input" placeholder="Search episodes..."/>
-        <label id="search-label" for="search-input">Search:</label>
+      <div class="episode-card-summary">
+        <p class="summary-text"></p>
+        <p class="summary-link">View episode on <a href="">TVMaze</a></p>
       </div>
-    </header>
-    <main>
-      <div id="root"></div>
-    </main>
-    <footer>
-      <p>
-        All data get from TVmaze.
-        <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
-      </p>
-    </footer>
-    <!-- Loads YOUR javascript code -->
-    <script src="script.js"></script>
-  </body>
+    </div>
+  </template>
+
+  <header>
+    <div class="select">
+      <select id="show-select" name="show"></select>
+    </div>
+
+    <div class="select">
+      <select id="episode-select" name="episode"></select>
+    </div>
+
+    <div class="search">
+      <input id="search-input" name="search-input" placeholder="Search episodes..." />
+      <label id="search-label" for="search-input">Search:</label>
+    </div>
+  </header>
+  <main>
+    <div id="root"></div>
+  </main>
+  <footer>
+    <p>
+      All data get from TVmaze.
+      <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
+    </p>
+  </footer>
+  <!-- Loads YOUR javascript code -->
+  <script src="script.js"></script>
+</body>
+
 </html>
