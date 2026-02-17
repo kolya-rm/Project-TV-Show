@@ -1,43 +1,107 @@
 const EPISODES_LIST_URL = "https://api.tvmaze.com/shows/82/episodes";
+const SHOWS_LIST_URL = "https://api.tvmaze.com/shows";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
-const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
+const DATA_LOADING_ERROR_MESSAGE =
+  "Connection is lost. Please try again later.";
 const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
 
+
+let allShows = [];
+const episodesCache = new Map();
 let allEpisodes = [];
 
+function getEpisodesUrl(id) {
+  return `https://api.tvmaze.com/shows/${id}/episodes`;
+}
+
+
+const root = document.getElementById("root"); // Root container where all episode cards will be rendered
 
 //region prepare
 function setup() {
+  setupShows();
   setupEpisodeSelect();
   setupSearchInput();
-  setupEpisodes();
 }
 
-function setupEpisodes() {
-  showDataLoadingMessage();
-  fetch(EPISODES_LIST_URL)
-    .then(response => response.json())
-    .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
-      .then(data => {
-        allEpisodes = data;
-        render(allEpisodes);
-      })
-      .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));   
+
+function setupShows() {
+  fetch(SHOWS_LIST_URL)
+    .then(res => res.json())
+    .then(data => {
+      allShows = data.sort(showComparatorByName);
+      renderShowSelect();
+    })
+    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
+
+  document
+    .getElementById("show-select")
+    .addEventListener("input", onInputShowSelect);
 }
 
-function setupEpisodeSelect() {
-  document.getElementById("episode-select").addEventListener("input", onSelectInput);
+
+    function setupEpisodeSelect() {
+  document
+    .getElementById("episode-select")
+    .addEventListener("input", onSelectInput);
 }
 
 function setupSearchInput() {
-  document.getElementById("search-input").addEventListener("input", onSearchInput);
+  document
+    .getElementById("search-input")
+    .addEventListener("input", onSearchInput);
 }
+
+
+/* function renderShowSelect() {
+  const select = document.getElementById("show-select");
+  select.options.length = 0;
+
+} */
+
+function setupEpisodes() {
+  showDataLoadingMessage();
+  fetch(SHOWS_LIST_URL)
+    .then((response) => response.json())
+    .catch(() => window.alert(DATA_LOADING_ERROR_MESSAGE))
+    .then((data) => {
+      allShows = data.sort(showComparatorByName);
+      renderShowSelect();
+    })
+    .catch(() => window.alert(DATA_PARSING_ERROR_MESSAGE));
+}
+
+
+
 //endregion
 
-
 //region event listeners
+let selectedShowId = null;
+
+function onInputShowSelect(event) {
+  selectedShowId = Number(event.target.value);
+
+  if (episodesCache.has(selectedShowId)) {
+    allEpisodes = episodesCache.get(selectedShowId);
+    render(allEpisodes);
+    return;
+  }
+
+  showDataLoadingMessage();
+
+  fetch(getEpisodesUrl(selectedShowId))
+    .then(res => res.json())
+    .then(episodes => {
+      episodesCache.set(selectedShowId, episodes);
+      allEpisodes = episodes;
+      render(allEpisodes);
+    })
+    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
+}
+
+
 function onSelectInput(event) {
   document.getElementById(event.target.value).scrollIntoView({
     behavior: "smooth",
@@ -50,22 +114,34 @@ function onSearchInput(event) {
 
   const filteredEpisodes = allEpisodes.filter(
     (episode) =>
-      episode.name.toLowerCase().includes(searchTerm) ||
-      episode.summary.toLowerCase().includes(searchTerm) ||
-      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm)
+      (episode.name || "").toLowerCase().includes(searchTerm) ||
+      (episode.summary || "").toLowerCase().includes(searchTerm) || // Use an empty string if summary is null to avoid runtime errors
+      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm),
   );
 
   render(filteredEpisodes);
 }
 //endregion
 
-
 //region render
+function renderShowSelect() {
+  const select = document.getElementById("show-select");
+  select.options.length = 0;
+
+  allShows.forEach(show => {
+    select.add(new Option(show.name, show.id));
+  });
+}
+
+
 function render(episodeList) {
   renderEpisodeSelect(episodeList);
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
 }
+
+
+
 
 function renderEpisodeSelect(episodeList) {
   const selectElement = document.getElementById("episode-select");
@@ -90,7 +166,9 @@ function renderEpisodeCards(episodeList) {
 }
 
 function renderEpisodeCard(episode) {
-  const card = document.getElementById("episode-card-template").content.cloneNode(true);
+  const card = document
+    .getElementById("episode-card-template")
+    .content.cloneNode(true);
 
   card.querySelector(".episode-card").id = getEpisodeCode(episode);
 
@@ -98,13 +176,14 @@ function renderEpisodeCard(episode) {
   renderCardImage(card, episode);
   renderCardSummary(card, episode);
   renderCardLink(card, episode);
-  
+
   root.append(card);
 }
 
 function renderCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
-  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
+  card.querySelector(".episode-card-title h3").textContent =
+    `${episode.name} - ${code}`;
 }
 
 function renderCardImage(card, episode) {
@@ -121,7 +200,6 @@ function renderCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url);
 }
 //endregion
-
 
 //region utils
 function showDataLoadingMessage() {
@@ -144,7 +222,10 @@ function updateProtocol(url) {
   }
   return url;
 }
-//endregion
 
+function showComparatorByName(show1, show2) {
+  return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
+}
+//endregion
 
 window.onload = setup;
