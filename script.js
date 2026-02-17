@@ -62,7 +62,7 @@ function setupShowSelect() {
       CACHE.shows = data.sort(showComparatorByName);
       renderShowSelect();
     })
-    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
+    .catch(showDataLoadingErrorMessage);
 }
 
 function setupShow() {
@@ -73,7 +73,7 @@ function setupShow() {
     .then((episodes) => {
       render(CACHE.addCurrentEpisodes(episodes));
     })
-    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
+    .catch(showDataLoadingErrorMessage);
 }
 //endregion
 
@@ -189,6 +189,15 @@ function showDataLoadingMessage() {
   
   rootElement.innerHTML = "";
   messageElement.textContent = DATA_LOADING_MESSAGE;
+  rootElement.append(messageElement);
+}
+
+function showDataLoadingErrorMessage() {
+  const rootElement = document.getElementById("root");
+  const messageElement = document.createElement("h1");
+
+  rootElement.innerHTML = "";
+  messageElement.textContent = DATA_LOADING_ERROR_MESSAGE;
   rootElement.append(messageElement);
 }
 
