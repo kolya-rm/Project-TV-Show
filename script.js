@@ -1,18 +1,37 @@
-const EPISODES_LIST_URL = "https://api.tvmaze.com/shows//episodes";
-const SHOWS_LIST_URL = "https://api.tvmaze.com/shows";
+const SHOW_LIST_URL = "https://api.tvmaze.com/shows";
+const EPISODES_LIST_URL_TEMPLATE = "https://api.tvmaze.com/shows/{id}/episodes";
+const ID_TOKEN = "{id}";
+
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
+
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
 const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
 
+const CACHE = {
+  shows: [],
+  episodes: {},
+  current: "",
 
-let showList = [];
-const episodesCache = new Map();
-let allEpisodes = [];
+  addCurrentEpisodes(episodes) {
+    this.episodes[this.current] = episodes;
+    return episodes;
+  },
 
-function getEpisodesUrl(id) {
-  return `https://api.tvmaze.com/shows/${id}/episodes`;
-}
+  getCurrentEpisodes() {
+    return this.episodes[this.current];
+  },
+
+  updateCurrent(current) {
+    this.current = current;
+    return current;
+  },
+
+  getCurrentShowURL() {
+    return EPISODES_LIST_URL_TEMPLATE.replace(ID_TOKEN, this.current);
+  },
+};
+
 
 //region prepare
 function setup() {
@@ -36,11 +55,23 @@ function setupSearchInput() {
 
 function setupShowSelect() {
   showDataLoadingMessage();
-  fetch(SHOWS_LIST_URL)
+
+  fetch(SHOW_LIST_URL)
     .then((res) => res.json())
     .then((data) => {
-      showList = data.sort(showComparatorByName);
+      CACHE.shows = data.sort(showComparatorByName);
       renderShowSelect();
+    })
+    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
+}
+
+function setupShow() {
+  showDataLoadingMessage();
+
+  fetch(CACHE.getCurrentShowURL())
+    .then((response) => response.json())
+    .then((episodes) => {
+      render(CACHE.addCurrentEpisodes(episodes));
     })
     .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
 }
@@ -48,27 +79,13 @@ function setupShowSelect() {
 
 
 //region event listeners
-let selectedShowId = null;
-
 function onInputShowSelect(event) {
-  selectedShowId = Number(event.target.value);
-
-  if (episodesCache.has(selectedShowId)) {
-    allEpisodes = episodesCache.get(selectedShowId);
-    render(allEpisodes);
-    return;
+  CACHE.updateCurrent(event.target.value);
+  if (CACHE.getCurrentEpisodes()) {
+    render(CACHE.getCurrentEpisodes());
+  } else {
+    setupShow();
   }
-
-  showDataLoadingMessage();
-
-  fetch(getEpisodesUrl(selectedShowId))
-    .then(res => res.json())
-    .then(episodes => {
-      episodesCache.set(selectedShowId, episodes);
-      allEpisodes = episodes;
-      render(allEpisodes);
-    })
-    .catch(() => alert(DATA_LOADING_ERROR_MESSAGE));
 }
 
 
@@ -81,7 +98,7 @@ function onInputEpisodeSelect(event) {
 
 function onSearchInput(event) {
   const searchTerm = event.target.value.toLowerCase();
-  const filteredEpisodes = allEpisodes.filter(
+  const filteredEpisodes = CACHE.getCurrentEpisodes().filter(
     (episode) =>
       (episode.name || "").toLowerCase().includes(searchTerm) ||
       (episode.summary || "").toLowerCase().includes(searchTerm) ||
@@ -99,7 +116,7 @@ function renderShowSelect() {
   
   select.options.length = 0;
 
-  showList.forEach(show => select.add(new Option(show.name, show.id)));
+  CACHE.shows.forEach(show => select.add(new Option(show.name, show.id)));
 }
 
 function render(episodeList) {
@@ -122,7 +139,7 @@ function renderEpisodeSelect(episodeList) {
 
 function renderSearchLabel(episodeList) {
   const label = document.getElementById("search-label");
-  label.textContent = `Displaying ${episodeList.length}/${allEpisodes.length} 
+  label.textContent = `Displaying ${episodeList.length}/${CACHE.getCurrentEpisodes().length} 
     episode${episodeList.length > 2 ? "s" : ""}`;
 }
 
