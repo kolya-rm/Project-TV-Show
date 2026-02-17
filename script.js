@@ -35,13 +35,13 @@ const CACHE = {
 
 //region prepare
 function setup() {
-  setupShowInput();
+  setupShowSelect();
   setupEpisodeSelect();
   setupSearchInput();
-  setupShowSelect();
+  setupShowList();
 }
 
-function setupShowInput() {
+function setupShowSelect() {
   document.getElementById("show-select").addEventListener("input", onInputShowSelect);
 }
 
@@ -53,7 +53,7 @@ function setupSearchInput() {
   document.getElementById("search-input").addEventListener("input", onSearchInput);
 }
 
-function setupShowSelect() {
+function setupShowList() {
   showDataLoadingMessage();
 
   fetch(SHOW_LIST_URL)
@@ -61,6 +61,7 @@ function setupShowSelect() {
     .then((data) => {
       CACHE.shows = data.sort(showComparatorByName);
       renderShowSelect();
+      document.getElementById("show-select").dispatchEvent(new Event("input"));
     })
     .catch(showDataLoadingErrorMessage);
 }
@@ -87,7 +88,6 @@ function onInputShowSelect(event) {
     setupShow();
   }
 }
-
 
 function onInputEpisodeSelect(event) {
   document.getElementById(event.target.value).scrollIntoView({
