@@ -3,8 +3,7 @@ const SHOWS_LIST_URL = "https://api.tvmaze.com/shows";
 const HTTP_PROTOCOL_PREFIX = "http://";
 const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
-const DATA_LOADING_ERROR_MESSAGE ="Connection is lost. Please try again later.";
-const DATA_PARSING_ERROR_MESSAGE = "Data is corrupted. Please try again.";
+const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
 
 
 let showList = [];
@@ -20,13 +19,12 @@ function setup() {
   setupShowInput();
   setupEpisodeSelect();
   setupSearchInput();
-  setupShows();
+  setupShowSelect();
 }
 
 function setupShowInput() {
   document.getElementById("show-select").addEventListener("input", onInputShowSelect);
 }
-
 
 function setupEpisodeSelect() {
   document.getElementById("episode-select").addEventListener("input", onInputEpisodeSelect);
@@ -36,7 +34,8 @@ function setupSearchInput() {
   document.getElementById("search-input").addEventListener("input", onSearchInput);
 }
 
-function setupShows() {
+function setupShowSelect() {
+  showDataLoadingMessage();
   fetch(SHOWS_LIST_URL)
     .then((res) => res.json())
     .then((data) => {
@@ -82,36 +81,32 @@ function onInputEpisodeSelect(event) {
 
 function onSearchInput(event) {
   const searchTerm = event.target.value.toLowerCase();
-
   const filteredEpisodes = allEpisodes.filter(
     (episode) =>
       (episode.name || "").toLowerCase().includes(searchTerm) ||
-      (episode.summary || "").toLowerCase().includes(searchTerm) || // Use an empty string if summary is null to avoid runtime errors
-      getEpisodeCode(episode).toLocaleLowerCase().includes(searchTerm),
+      (episode.summary || "").toLowerCase().includes(searchTerm) ||
+      (getEpisodeCode(episode) || "").toLowerCase().includes(searchTerm),
   );
 
   render(filteredEpisodes);
 }
 //endregion
 
+
 //region render
 function renderShowSelect() {
   const select = document.getElementById("show-select");
+  
   select.options.length = 0;
 
-  showList.forEach(show => {
-    select.add(new Option(show.name, show.id));
-  });
+  showList.forEach(show => select.add(new Option(show.name, show.id)));
 }
-
 
 function render(episodeList) {
   renderEpisodeSelect(episodeList);
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
 }
-
-
 
 
 function renderEpisodeSelect(episodeList) {
@@ -169,11 +164,15 @@ function renderCardLink(card, episode) {
 }
 //endregion
 
+
 //region utils
 function showDataLoadingMessage() {
+  const rootElement = document.getElementById("root");
   const messageElement = document.createElement("h1");
+  
+  rootElement.innerHTML = "";
   messageElement.textContent = DATA_LOADING_MESSAGE;
-  document.getElementById("root").append(messageElement);
+  rootElement.append(messageElement);
 }
 
 function getEpisodeCode(episode) {
