@@ -133,7 +133,7 @@ function renderEpisodeSelect(episodeList) {
 
   episodeList.forEach((episode) => {
     const code = getEpisodeCode(episode);
-    selectElement.add(new Option(`${code} – ${episode.name}`, code));
+    selectElement.add(new Option(`${code} – ${episode.name || ""}`, code));
   });
 }
 
@@ -163,21 +163,21 @@ function renderEpisodeCard(episode) {
 
 function renderCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
-  card.querySelector(".episode-card-title h3").textContent = `${episode.name} - ${code}`;
+  card.querySelector(".episode-card-title h3").textContent = `${episode.name || ""} - ${code}`;
 }
 
 function renderCardImage(card, episode) {
   const image = card.querySelector(".episode-card-image img");
-  image.src = updateProtocol(episode.image.medium);
-  image.alt = `${episode.name} image`;
+  image.src = updateProtocol(episode.image.medium || "");
+  image.alt = `${episode.name || ""} image`;
 }
 
 function renderCardSummary(card, episode) {
-  card.querySelector(".summary-text").textContent = removeTags(episode.summary);
+  card.querySelector(".summary-text").textContent = removeTags(episode.summary || "");
 }
 
 function renderCardLink(card, episode) {
-  card.querySelector(".summary-link a").href = updateProtocol(episode.url);
+  card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
 }
 //endregion
 
@@ -202,7 +202,7 @@ function showDataLoadingErrorMessage() {
 }
 
 function getEpisodeCode(episode) {
-  return `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
+  return `S${String(episode.season || "").padStart(2, "0")}E${String(episode.number || "").padStart(2, "0")}`;
 }
 
 function removeTags(text) {
