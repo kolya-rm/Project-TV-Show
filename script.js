@@ -126,7 +126,7 @@ function onSearchInput(event) {
 //region render
 function renderCataloguePage() {
   renderHeaderSelectLabel(CACHE.catalogue);
-  renderHeaderSelect();
+  renderHeaderSelect(CACHE.catalogue);
   renderHeaderInput();
 }
 
@@ -136,12 +136,12 @@ function renderHeaderSelectLabel(list) {
   selectLabel.textContent = `Found ${list.length} show${list.length === 1 ? "" : "s"}:`;
 }
 
-function renderHeaderSelect() {
+function renderHeaderSelect(list) {
   const select = document.getElementById("header-select");
   
   select.options.length = 0;
   
-  CACHE.catalogue.forEach(show => select.add(new Option(show.name || "", show.id || "")));
+  list.forEach(show => select.add(new Option(show.name || "", show.id || "")));
 }
 
 function renderHeaderInput() {
