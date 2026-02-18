@@ -222,6 +222,10 @@ function getEpisodeCode(episode) {
   return `S${String(episode.season || "").padStart(2, "0")}E${String(episode.number || "").padStart(2, "0")}`;
 }
 
+function getShowCode(show) {
+  return `show-${String(show.id || "").padStart(4, "0")}`;
+}
+
 function removeTags(text) {
   return text.replace(/<[^>]*>/g, "");
 }
