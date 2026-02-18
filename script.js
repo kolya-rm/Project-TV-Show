@@ -9,17 +9,17 @@ const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
 const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
 
 const CACHE = {
-  shows: [],
-  episodes: {},
+  catalogue: [],
+  shows: {},
   current: "",
 
-  addCurrentEpisodes(episodes) {
-    this.episodes[this.current] = episodes;
+  addCurrentShow(episodes) {
+    this.shows[this.current] = episodes;
     return episodes;
   },
 
-  getCurrentEpisodes() {
-    return this.episodes[this.current];
+  getCurrentShow() {
+    return this.shows[this.current];
   },
 
   updateCurrent(current) {
@@ -35,10 +35,27 @@ const CACHE = {
 
 //region prepare
 function setup() {
-  setupShowSelect();
-  // setupEpisodeSelect();
-  setupSearchInput();
-  // setupShowList();
+  setupCataloguePage();
+}
+
+function setupCataloguePage() {
+  showDataLoadingMessage();
+
+  if (CACHE.catalogue.length === 0) {
+    fetch(SHOW_LIST_URL)
+      .then((response) => response.json())
+      .then((data) => {
+        CACHE.catalogue = data.sort(showComparatorByName);
+        renderCataloguePage();
+      })
+      .catch(showDataLoadingErrorMessage);
+  } else {
+    renderCataloguePage();
+  }
+}
+
+function renderCataloguePage() {
+  renderHeaderSelect();
 }
 
 function setupShowSelect() {
@@ -59,8 +76,8 @@ function setupShowList() {
   fetch(SHOW_LIST_URL)
     .then((res) => res.json())
     .then((data) => {
-      CACHE.shows = data.sort(showComparatorByName);
-      renderShowSelect();
+      CACHE.catalogue = data.sort(showComparatorByName);
+      renderHeaderSelect();
       document.getElementById("show-select").dispatchEvent(new Event("input"));
     })
     .catch(showDataLoadingErrorMessage);
@@ -72,7 +89,7 @@ function setupShow() {
   fetch(CACHE.getCurrentShowURL())
     .then((response) => response.json())
     .then((episodes) => {
-      render(CACHE.addCurrentEpisodes(episodes));
+      render(CACHE.addCurrentShow(episodes));
     })
     .catch(showDataLoadingErrorMessage);
 }
@@ -82,8 +99,8 @@ function setupShow() {
 //region event listeners
 function onInputShowSelect(event) {
   CACHE.updateCurrent(event.target.value);
-  if (CACHE.getCurrentEpisodes()) {
-    render(CACHE.getCurrentEpisodes());
+  if (CACHE.getCurrentShow()) {
+    render(CACHE.getCurrentShow());
   } else {
     setupShow();
   }
@@ -98,7 +115,7 @@ function onInputEpisodeSelect(event) {
 
 function onSearchInput(event) {
   const searchTerm = event.target.value.toLowerCase();
-  const filteredEpisodes = CACHE.getCurrentEpisodes().filter(
+  const filteredEpisodes = CACHE.getCurrentShow().filter(
     (episode) =>
       (episode.name || "").toLowerCase().includes(searchTerm) ||
       (episode.summary || "").toLowerCase().includes(searchTerm) ||
@@ -111,12 +128,12 @@ function onSearchInput(event) {
 
 
 //region render
-function renderShowSelect() {
-  const select = document.getElementById("show-select");
+function renderHeaderSelect() {
+  const select = document.getElementById("header-select");
   
   select.options.length = 0;
 
-  CACHE.shows.forEach(show => select.add(new Option(show.name, show.id)));
+  CACHE.catalogue.forEach(show => select.add(new Option(show.name, show.id)));
 }
 
 function render(episodeList) {
@@ -139,7 +156,7 @@ function renderEpisodeSelect(episodeList) {
 
 function renderSearchLabel(episodeList) {
   const label = document.getElementById("search-label");
-  label.textContent = `Displaying ${episodeList.length}/${CACHE.getCurrentEpisodes().length} 
+  label.textContent = `Displaying ${episodeList.length}/${CACHE.getCurrentShow().length} 
     episode${episodeList.length > 2 ? "s" : ""}`;
 }
 
