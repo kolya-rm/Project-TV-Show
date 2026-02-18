@@ -35,7 +35,12 @@ const CACHE = {
 
 //region prepare
 function setup() {
+  setupHeaderSelect();
   setupCataloguePage();
+}
+
+function setupHeaderSelect() {
+  document.getElementById("header-select").addEventListener("input", onInputHeaderSelect);
 }
 
 function setupCataloguePage() {
@@ -52,14 +57,6 @@ function setupCataloguePage() {
   } else {
     renderCataloguePage(CACHE.catalogue);
   }
-}
-
-function setupShowSelect() {
-  document.getElementById("show-select").addEventListener("input", onInputShowSelect);
-}
-
-function setupEpisodeSelect() {
-  document.getElementById("episode-select").addEventListener("input", onInputEpisodeSelect);
 }
 
 function setupSearchInput() {
@@ -93,16 +90,7 @@ function setupShow() {
 
 
 //region event listeners
-function onInputShowSelect(event) {
-  CACHE.updateCurrent(event.target.value);
-  if (CACHE.getCurrentShow()) {
-    render(CACHE.getCurrentShow());
-  } else {
-    setupShow();
-  }
-}
-
-function onInputEpisodeSelect(event) {
+function onInputHeaderSelect(event) {
   document.getElementById(event.target.value).scrollIntoView({
     behavior: "smooth",
     block: "start",
