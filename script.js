@@ -127,6 +127,7 @@ function onSearchInput(event) {
 function renderCataloguePage() {
   renderHeaderSelectLabel(CACHE.catalogue);
   renderHeaderSelect();
+  renderHeaderInput();
 }
 
 function renderHeaderSelectLabel(list) {
@@ -141,6 +142,12 @@ function renderHeaderSelect() {
   select.options.length = 0;
   
   CACHE.catalogue.forEach(show => select.add(new Option(show.name || "", show.id || "")));
+}
+
+function renderHeaderInput() {
+  const input = document.getElementById("header-input");
+
+  input.value = "";
 }
 
 function render(episodeList) {
