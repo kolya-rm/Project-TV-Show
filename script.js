@@ -35,7 +35,7 @@ const CACHE = {
 
 //region prepare
 function setup() {
-  //setupCataloguePage();
+  setupCataloguePage();
 }
 
 function setupCataloguePage() {
@@ -125,6 +125,7 @@ function onSearchInput(event) {
 
 //region render
 function renderCataloguePage(list) {
+  console.log("render catalogue page: ", list)
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
   renderShowCards(list);
@@ -145,12 +146,47 @@ function renderHeaderSelect(list) {
 }
 
 function renderShowCards(list) {
+  console.log("render show cards");
   clearRootElement();
   list.forEach(renderShowCard);
 }
 
 function renderShowCard(show) {
-  
+  const card = document.getElementById("show-card-template").content.cloneNode(true);
+  card.querySelector(".show-card").id = show.id || "";
+
+  renderShowCardTitle(show, card);
+  renderShowCardImage(show, card);
+  renderShowCardSummary(show, card);
+  renderShowCardDetails(show, card);
+
+  document.getElementById("root").appendChild(card);
+}
+
+function renderShowCardTitle(show, card) {
+  card.querySelector(".show-card-header h1").textContent = `${show.name || ""}`;
+}
+
+function renderShowCardImage(show, card) {
+  const image = card.querySelector(".show-card-image img");
+
+  image.src = show.image.medium || "";
+  image.alt = `${show.name || ""} cover image`;
+}
+
+function renderShowCardSummary(show, card) {
+  card.querySelector(".show-card-summary").innerHTML = show.summary || "";
+}
+
+function renderShowCardDetails(show, card) {
+  card.querySelector(".show-card-details-rating p").innerHTML =
+    `<b>Rating: </b>${show.rating.average || ""}`;
+  card.querySelector(".show-card-details-genres p").innerHTML =
+    `<b>Genres:  </b>${show.genres.join(" | ") || ""}`;
+  card.querySelector(".show-card-details-status p").innerHTML =
+    `<b>Status:  </b>${show.status || ""}`;
+  card.querySelector(".show-card-details-runtime p").innerHTML =
+    `<b>Runtime:  </b>${show.runtime || ""}`;
 }
 
 
@@ -259,6 +295,7 @@ function showComparatorByName(show1, show2) {
 }
 
 function clearRootElement() {
+  console.log("clear root element");
   document.getElementById("root").innerHTML = "";
 }
 
