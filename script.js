@@ -132,8 +132,8 @@ function renderHeaderSelect() {
   const select = document.getElementById("header-select");
   
   select.options.length = 0;
-
-  CACHE.catalogue.forEach(show => select.add(new Option(show.name, show.id)));
+  
+  CACHE.catalogue.forEach(show => select.add(new Option(show.name || "", getShowCode(show))));
 }
 
 function render(episodeList) {
