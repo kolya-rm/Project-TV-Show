@@ -35,8 +35,13 @@ const CACHE = {
 
 //region prepare
 function setup() {
+  setupHeaderInput();
   setupHeaderSelect();
   setupCataloguePage();
+}
+
+function setupHeaderInput() {
+  document.getElementById("header-input").addEventListener("input", onInputHeaderInput);
 }
 
 function setupHeaderSelect() {
@@ -57,10 +62,6 @@ function setupCataloguePage() {
   } else {
     renderCataloguePage(CACHE.catalogue);
   }
-}
-
-function setupSearchInput() {
-  document.getElementById("search-input").addEventListener("input", onSearchInput);
 }
 
 function setupShowList() {
@@ -97,23 +98,17 @@ function onInputHeaderSelect(event) {
   });
 }
 
-function onSearchInput(event) {
+function onInputHeaderInput(event) {
   const searchTerm = event.target.value.toLowerCase();
-  const filteredEpisodes = CACHE.getCurrentShow().filter(
-    (episode) =>
-      (episode.name || "").toLowerCase().includes(searchTerm) ||
-      (episode.summary || "").toLowerCase().includes(searchTerm) ||
-      (getEpisodeCode(episode) || "").toLowerCase().includes(searchTerm),
-  );
+  const filteredItems = filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm);
 
-  render(filteredEpisodes);
+  renderCataloguePage(filteredItems);
 }
 //endregion
 
 
 //region render
 function renderCataloguePage(list) {
-  console.log("render catalogue page: ", list)
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
   renderShowCards(list);
@@ -134,7 +129,6 @@ function renderHeaderSelect(list) {
 }
 
 function renderShowCards(list) {
-  console.log("render show cards");
   clearRootElement();
   list.forEach(renderShowCard);
 }
@@ -283,12 +277,19 @@ function showComparatorByName(show1, show2) {
 }
 
 function clearRootElement() {
-  console.log("clear root element");
   document.getElementById("root").innerHTML = "";
 }
 
 function clearHeaderInput() {
   document.getElementById("header-input").value = "";
+}
+
+function filterItemsByNameSummaryCode(list, searchTerm) {
+  return list.filter((item) =>
+    (item.name || "").toLowerCase().includes(searchTerm) ||
+    (item.summary || "").toLowerCase().includes(searchTerm) ||
+    (getEpisodeCode(item) || "").toLowerCase().includes(searchTerm),
+  );
 }
 //endregion
 
