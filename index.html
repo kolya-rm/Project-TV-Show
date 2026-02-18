@@ -8,20 +8,6 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   </head>
   <body>
-    <template id="episode-card-template">
-      <div class="episode-card">
-        <div class="episode-card-title">
-          <h3></h3>
-        </div>
-        <div class="episode-card-image">
-          <img src="" alt="" />
-        </div>
-        <div class="episode-card-summary">
-          <p class="summary-text"></p>
-          <p class="summary-link">View episode on <a href="">TVMaze</a></p>
-        </div>
-      </div>
-    </template>
     <header>
       <div class="select">
         <select id="show-select" name="show"></select>
@@ -43,6 +29,49 @@
         <a href="https://www.tvmaze.com/api#licensing">Licensing conditions</a>.
       </p>
     </footer>
+    <template id="episode-card-template">
+      <div class="episode-card">
+        <div class="episode-card-title">
+          <h3></h3>
+        </div>
+        <div class="episode-card-image">
+          <img src="" alt="" />
+        </div>
+        <div class="episode-card-summary">
+          <p class="summary-text"></p>
+          <p class="summary-link">View episode on <a href="">TVMaze</a></p>
+        </div>
+      </div>
+    </template>
+    <template id="show-card-template">
+      <div class="show-card">
+        <div class="show-card-header">
+          <h1></h1>
+        </div>
+        <div class="show-card-body">
+          <div class="show-card-image">
+            <img src="" alt="" />
+          </div>
+          <div class="show-card-summary">
+            <p></p>
+          </div>
+          <div class="show-card-details">
+            <div class="show-card-details-seasons">
+              <p></p>
+            </div>
+            <div class="show-card-details-genres">
+              <p></p>
+            </div>
+            <div class="show-card-details-status">
+              <p></p>
+            </div>
+            <div class="show-card-details-runtime">
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
   </body>
