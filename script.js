@@ -54,10 +54,6 @@ function setupCataloguePage() {
   }
 }
 
-function renderCataloguePage() {
-  renderHeaderSelect();
-}
-
 function setupShowSelect() {
   document.getElementById("show-select").addEventListener("input", onInputShowSelect);
 }
@@ -128,12 +124,23 @@ function onSearchInput(event) {
 
 
 //region render
+function renderCataloguePage() {
+  renderHeaderSelectLabel(CACHE.catalogue);
+  renderHeaderSelect();
+}
+
+function renderHeaderSelectLabel(list) {
+  const selectLabel = document.getElementById("header-select-label");
+
+  selectLabel.textContent = `Found ${list.length} show${list.length === 1 ? "" : "s"}:`;
+}
+
 function renderHeaderSelect() {
   const select = document.getElementById("header-select");
   
   select.options.length = 0;
   
-  CACHE.catalogue.forEach(show => select.add(new Option(show.name || "", getShowCode(show))));
+  CACHE.catalogue.forEach(show => select.add(new Option(show.name || "", show.id || "")));
 }
 
 function render(episodeList) {
