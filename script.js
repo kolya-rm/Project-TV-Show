@@ -46,11 +46,11 @@ function setupCataloguePage() {
       .then((response) => response.json())
       .then((data) => {
         CACHE.catalogue = data.sort(showComparatorByName);
-        renderCataloguePage();
+        renderCataloguePage(CACHE.catalogue);
       })
       .catch(showDataLoadingErrorMessage);
   } else {
-    renderCataloguePage();
+    renderCataloguePage(CACHE.catalogue);
   }
 }
 
@@ -124,10 +124,10 @@ function onSearchInput(event) {
 
 
 //region render
-function renderCataloguePage() {
-  renderHeaderSelectLabel(CACHE.catalogue);
-  renderHeaderSelect(CACHE.catalogue);
-  renderHeaderInput();
+function renderCataloguePage(list) {
+  renderHeaderSelectLabel(list);
+  renderHeaderSelect(list);
+  renderShowCards(list);
 }
 
 function renderHeaderSelectLabel(list) {
@@ -144,18 +144,21 @@ function renderHeaderSelect(list) {
   list.forEach(show => select.add(new Option(show.name || "", show.id || "")));
 }
 
-function renderHeaderInput() {
-  const input = document.getElementById("header-input");
-
-  input.value = "";
+function renderShowCards(list) {
+  clearRootElement();
+  list.forEach(renderShowCard);
 }
+
+function renderShowCard(show) {
+  
+}
+
 
 function render(episodeList) {
   renderEpisodeSelect(episodeList);
   renderSearchLabel(episodeList);
   renderEpisodeCards(episodeList);
 }
-
 
 function renderEpisodeSelect(episodeList) {
   const selectElement = document.getElementById("episode-select");
@@ -253,6 +256,14 @@ function updateProtocol(url) {
 
 function showComparatorByName(show1, show2) {
   return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
+}
+
+function clearRootElement() {
+  document.getElementById("root").innerHTML = "";
+}
+
+function clearHeaderInput() {
+  document.getElementById("header-input").value = "";
 }
 //endregion
 
