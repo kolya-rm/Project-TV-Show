@@ -9,15 +9,13 @@
   </head>
   <body>
     <header>
-      <div class="select">
-        <select id="show-select" name="show"></select>
+      <div class="header-element">
+        <label id="header-input-label" for="search-input">Filtered for:</label>
+        <input id="header-input" name="search-input" placeholder="" />
       </div>
-      <div class="select">
-        <select id="episode-select" name="episode"></select>
-      </div>
-      <div class="search">
-        <input id="search-input" name="search-input" placeholder="Search episodes..." />
-        <label id="search-label" for="search-input">Search:</label>
+      <div class="header-element">
+        <label id="header-select-label" for="select-select">Found:</label>
+        <select id="header-select" name="select-select"></select>
       </div>
     </header>
     <main>

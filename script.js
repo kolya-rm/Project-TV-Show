@@ -36,9 +36,9 @@ const CACHE = {
 //region prepare
 function setup() {
   setupShowSelect();
-  setupEpisodeSelect();
+  // setupEpisodeSelect();
   setupSearchInput();
-  setupShowList();
+  // setupShowList();
 }
 
 function setupShowSelect() {
