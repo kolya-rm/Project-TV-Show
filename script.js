@@ -35,7 +35,7 @@ const CACHE = {
 
 //region prepare
 function setup() {
-  setupCataloguePage();
+  //setupCataloguePage();
 }
 
 function setupCataloguePage() {
