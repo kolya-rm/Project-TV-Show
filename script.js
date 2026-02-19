@@ -97,6 +97,7 @@ function setupShowPage() {
 
 //region render
 function renderCataloguePage(list) {
+  renderHeaderButton();
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
   renderShowCards(list);
@@ -150,6 +151,7 @@ function renderShowCardDetails(show, card) {
 
 
 function renderShowPage(list) {
+  renderHeaderButton();
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
   renderEpisodeCards(list);
@@ -192,6 +194,17 @@ function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
 }
 
+function renderHeaderButton() {
+  headerButton = document.getElementById("header-button-back-img");
+  switch (current_page_type) {
+    case PAGE_TYPE_CATALOGUE:
+      headerButton.style.visibility = "hidden";
+      break;
+    case PAGE_TYPE_SHOW:
+      headerButton.style.visibility = "visible";
+      break;
+  }
+}
 
 function renderHeaderSelectLabel(list) {
   const selectLabel = document.getElementById("header-select-label");
