@@ -89,43 +89,6 @@ function setupShowPage() {
 
 
 //region render
-function renderHeaderSelectLabel(list) {
-  const selectLabel = document.getElementById("header-select-label");
-  let item;
-  
-  switch (CURRENT_PAGE) {
-    case PAGE_TYPE_CATALOGUE:
-      item = "show";
-      break;
-    case PAGE_TYPE_SHOW:
-      item = "episode";
-      break
-  }
-
-  selectLabel.textContent = `Found ${list.length} ${item}${list.length === 1 ? "" : "s"}:`;
-}
-
-function renderHeaderSelect(list) {
-  const select = document.getElementById("header-select");
-
-  select.options.length = 0;
-
-  list.forEach((item) => {
-    let value;
-
-    switch(CURRENT_PAGE) {
-      case PAGE_TYPE_CATALOGUE:
-        value = item.id;
-        break;
-      case PAGE_TYPE_SHOW:
-        value = getEpisodeCode(item);
-        break;
-    }
-  
-    select.add(new Option(item.name || "", value || ""));
-  });
-}
-
 function renderCataloguePage(list) {
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
@@ -221,6 +184,43 @@ function renderEpisodeCardSummary(card, episode) {
 function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
 }
+
+function renderHeaderSelectLabel(list) {
+  const selectLabel = document.getElementById("header-select-label");
+  let item;
+
+  switch (CURRENT_PAGE) {
+    case PAGE_TYPE_CATALOGUE:
+      item = "show";
+      break;
+    case PAGE_TYPE_SHOW:
+      item = "episode";
+      break;
+  }
+
+  selectLabel.textContent = `Found ${list.length} ${item}${list.length === 1 ? "" : "s"}:`;
+}
+
+function renderHeaderSelect(list) {
+  const select = document.getElementById("header-select");
+
+  select.options.length = 0;
+
+  list.forEach((item) => {
+    let value;
+
+    switch (CURRENT_PAGE) {
+      case PAGE_TYPE_CATALOGUE:
+        value = item.id;
+        break;
+      case PAGE_TYPE_SHOW:
+        value = getEpisodeCode(item);
+        break;
+    }
+
+    select.add(new Option(item.name || "", value || ""));
+  });
+}
 //endregion
 
 
@@ -234,9 +234,15 @@ function onInputHeaderSelect(event) {
 
 function onInputHeaderInput(event) {
   const searchTerm = event.target.value.toLowerCase();
-  const filteredItems = filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm);
 
-  renderCataloguePage(filteredItems);
+  switch (CURRENT_PAGE) {
+    case PAGE_TYPE_CATALOGUE:
+      renderCataloguePage(filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm));
+      break;
+    case PAGE_TYPE_SHOW:
+      renderShowPage(filterItemsByNameSummaryCode(CACHE.getCurrentShow(), searchTerm));
+      break;
+  }
 }
 
 function onClickShowCard(event) {
@@ -280,16 +286,16 @@ function updateProtocol(url) {
   return url;
 }
 
-function showComparatorByName(show1, show2) {
-  return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
-}
-
 function clearRootElement() {
   document.getElementById("root").innerHTML = "";
 }
 
 function clearHeaderInput() {
   document.getElementById("header-input").value = "";
+}
+
+function showComparatorByName(show1, show2) {
+  return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
 }
 
 function filterItemsByNameSummaryCode(list, searchTerm) {
