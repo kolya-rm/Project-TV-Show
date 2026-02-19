@@ -55,6 +55,7 @@ function setupHeaderSelect() {
 function setupCataloguePage() {
   CURRENT_PAGE = PAGE_TYPE_CATALOGUE;
   showDataLoadingMessage();
+  clearHeaderInput();
 
   if (CACHE.catalogue.length) {
     renderCataloguePage(CACHE.catalogue);
@@ -72,6 +73,7 @@ function setupCataloguePage() {
 function setupShowPage() {
   CURRENT_PAGE = PAGE_TYPE_SHOW;
   showDataLoadingMessage();
+  clearHeaderInput();
 
   if (CACHE.getCurrentShow()) {
     renderShowPage(CACHE.getCurrentShowURL());
