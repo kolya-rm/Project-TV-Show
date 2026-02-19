@@ -91,8 +91,18 @@ function setupShowPage() {
 //region render
 function renderHeaderSelectLabel(list) {
   const selectLabel = document.getElementById("header-select-label");
+  let item;
+  
+  switch (CURRENT_PAGE) {
+    case PAGE_TYPE_CATALOGUE:
+      item = "show";
+      break;
+    case PAGE_TYPE_SHOW:
+      item = "episode";
+      break
+  }
 
-  selectLabel.textContent = `Found ${list.length} show${list.length === 1 ? "" : "s"}:`;
+  selectLabel.textContent = `Found ${list.length} ${item}${list.length === 1 ? "" : "s"}:`;
 }
 
 function renderHeaderSelect(list) {
