@@ -194,6 +194,7 @@ function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
 }
 
+
 function renderHeaderButton() {
   headerButton = document.getElementById("header-button-back-img");
   switch (current_page_type) {
@@ -262,10 +263,10 @@ function onInputHeaderInput(event) {
 
   switch (current_page_type) {
     case PAGE_TYPE_CATALOGUE:
-      renderCataloguePage(filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm));
+      renderCataloguePage(filterItemsByNameSummaryGenreCode(CACHE.catalogue, searchTerm));
       break;
     case PAGE_TYPE_SHOW:
-      renderShowPage(filterItemsByNameSummaryCode(CACHE.getCurrentShow(), searchTerm));
+      renderShowPage(filterItemsByNameSummaryGenreCode(CACHE.getCurrentShow(), searchTerm));
       break;
   }
 }
@@ -319,13 +320,16 @@ function showComparatorByName(show1, show2) {
   return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
 }
 
-function filterItemsByNameSummaryCode(list, searchTerm) {
-  return list.filter((item) =>
-    (item.name || "").toLowerCase().includes(searchTerm) ||
-    (item.summary || "").toLowerCase().includes(searchTerm) ||
-    (getEpisodeCode(item) || "").toLowerCase().includes(searchTerm),
+function filterItemsByNameSummaryGenreCode(list, searchTerm) {
+  return list.filter(
+    (item) =>
+      (item.name || "").toLowerCase().includes(searchTerm) ||
+      (item.summary || "").toLowerCase().includes(searchTerm) ||
+      (item.genres.join() || "").toLowerCase().includes(searchTerm) ||
+      (getEpisodeCode(item) || "").toLowerCase().includes(searchTerm),
   );
 }
 //endregion
+
 
 window.onload = setup;
