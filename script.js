@@ -81,7 +81,7 @@ function setupShowPage() {
   clearHeaderInput();
 
   if (CACHE.getCurrentShow()) {
-    renderShowPage(CACHE.getCurrentShowURL());
+    renderShowPage(CACHE.getCurrentShow());
   } else {
     fetch(CACHE.getCurrentShowURL())
       .then((response) => response.json())
