@@ -8,6 +8,9 @@ const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
 const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
 
+const PAGE_TYPE_CATALOGUE = "catalogue";
+const PAGE_TYPE_SHOW = "show";
+
 const CACHE = {
   catalogue: [],
   shows: {},
@@ -32,6 +35,7 @@ const CACHE = {
   },
 };
 
+let CURRENT_PAGE = PAGE_TYPE_CATALOGUE;
 
 //region prepare
 function setup() {
@@ -49,6 +53,7 @@ function setupHeaderSelect() {
 }
 
 function setupCataloguePage() {
+  CURRENT_PAGE = PAGE_TYPE_CATALOGUE;
   showDataLoadingMessage();
 
   if (CACHE.catalogue.length) {
@@ -65,23 +70,19 @@ function setupCataloguePage() {
 }
 
 function setupShowPage() {
+  CURRENT_PAGE = PAGE_TYPE_SHOW;
   showDataLoadingMessage();
-  console.log("setup show page 0:", CACHE.current, CACHE.getCurrentShow())
+
   if (CACHE.getCurrentShow()) {
-    console.log("setup show page 1 show loaded:", CACHE.current, CACHE.getCurrentShow());
     renderShowPage(CACHE.getCurrentShowURL());
   } else {
-    console.log("setup show page 2 show didn't loaded:", CACHE.current, CACHE.getCurrentShowURL(), "try to fetch from:", CACHE.getCurrentShow);
     fetch(CACHE.getCurrentShowURL())
       .then((response) => response.json())
       .then((data) => {
         CACHE.addCurrentShow(data);
         renderShowPage(data);
       })
-      .catch((error) => {
-        showDataLoadingErrorMessage();
-        console.log(error);
-      });
+      .catch(showDataLoadingErrorMessage);
   }
 }
 //endregion
@@ -99,9 +100,20 @@ function renderHeaderSelect(list) {
 
   select.options.length = 0;
 
-  list.forEach((show) =>
-    select.add(new Option(show.name || "", show.id || "")),
-  );
+  list.forEach((item) => {
+    let value;
+
+    switch(CURRENT_PAGE) {
+      case PAGE_TYPE_CATALOGUE:
+        value = item.id;
+        break;
+      case PAGE_TYPE_SHOW:
+        value = getEpisodeCode(item);
+        break;
+    }
+  
+    select.add(new Option(item.name || "", value || ""));
+  });
 }
 
 function renderCataloguePage(list) {
@@ -158,7 +170,6 @@ function renderShowCardDetails(show, card) {
 
 
 function renderShowPage(list) {
-  console.log("render show page: ", list);
   renderHeaderSelectLabel(list);
   renderHeaderSelect(list);
   renderEpisodeCards(list);
@@ -219,7 +230,6 @@ function onInputHeaderInput(event) {
 }
 
 function onClickShowCard(event) {
-  console.log("on click show card:", event.target.id);
   CACHE.updateCurrent(event.target.id);
   setupShowPage();
 }
@@ -247,10 +257,6 @@ function showDataLoadingErrorMessage() {
 
 function getEpisodeCode(episode) {
   return `S${String(episode.season || "").padStart(2, "0")}E${String(episode.number || "").padStart(2, "0")}`;
-}
-
-function getShowCode(show) {
-  return `show-${String(show.id || "").padStart(4, "0")}`;
 }
 
 function removeTags(text) {
