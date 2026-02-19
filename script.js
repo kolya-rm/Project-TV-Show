@@ -51,7 +51,9 @@ function setupHeaderSelect() {
 function setupCataloguePage() {
   showDataLoadingMessage();
 
-  if (CACHE.catalogue.length === 0) {
+  if (CACHE.catalogue.length) {
+    renderCataloguePage(CACHE.catalogue);
+  } else {
     fetch(SHOW_LIST_URL)
       .then((response) => response.json())
       .then((data) => {
@@ -59,65 +61,33 @@ function setupCataloguePage() {
         renderCataloguePage(CACHE.catalogue);
       })
       .catch(showDataLoadingErrorMessage);
-  } else {
-    renderCataloguePage(CACHE.catalogue);
   }
 }
 
-function setupShowList() {
+function setupShowPage() {
   showDataLoadingMessage();
-
-  fetch(SHOW_LIST_URL)
-    .then((res) => res.json())
-    .then((data) => {
-      CACHE.catalogue = data.sort(showComparatorByName);
-      renderHeaderSelect();
-      document.getElementById("show-select").dispatchEvent(new Event("input"));
-    })
-    .catch(showDataLoadingErrorMessage);
-}
-
-function setupShow() {
-  showDataLoadingMessage();
-
-  fetch(CACHE.getCurrentShowURL())
-    .then((response) => response.json())
-    .then((episodes) => {
-      render(CACHE.addCurrentShow(episodes));
-    })
-    .catch(showDataLoadingErrorMessage);
-}
-//endregion
-
-
-//region event listeners
-function onInputHeaderSelect(event) {
-  document.getElementById(event.target.value).scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}
-
-function onInputHeaderInput(event) {
-  const searchTerm = event.target.value.toLowerCase();
-  const filteredItems = filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm);
-
-  renderCataloguePage(filteredItems);
-}
-
-function onClickShowCard(event) {
-  console.log(event.target.id);
+  console.log("setup show page 0:", CACHE.current, CACHE.getCurrentShow())
+  if (CACHE.getCurrentShow()) {
+    console.log("setup show page 1 show loaded:", CACHE.current, CACHE.getCurrentShow());
+    renderShowPage(CACHE.getCurrentShowURL());
+  } else {
+    console.log("setup show page 2 show didn't loaded:", CACHE.current, CACHE.getCurrentShowURL(), "try to fetch from:", CACHE.getCurrentShow);
+    fetch(CACHE.getCurrentShowURL())
+      .then((response) => response.json())
+      .then((data) => {
+        CACHE.addCurrentShow(data);
+        renderShowPage(data);
+      })
+      .catch((error) => {
+        showDataLoadingErrorMessage();
+        console.log(error);
+      });
+  }
 }
 //endregion
 
 
 //region render
-function renderCataloguePage(list) {
-  renderHeaderSelectLabel(list);
-  renderHeaderSelect(list);
-  renderShowCards(list);
-}
-
 function renderHeaderSelectLabel(list) {
   const selectLabel = document.getElementById("header-select-label");
 
@@ -126,10 +96,18 @@ function renderHeaderSelectLabel(list) {
 
 function renderHeaderSelect(list) {
   const select = document.getElementById("header-select");
-  
+
   select.options.length = 0;
-  
-  list.forEach(show => select.add(new Option(show.name || "", show.id || "")));
+
+  list.forEach((show) =>
+    select.add(new Option(show.name || "", show.id || "")),
+  );
+}
+
+function renderCataloguePage(list) {
+  renderHeaderSelectLabel(list);
+  renderHeaderSelect(list);
+  renderShowCards(list);
 }
 
 function renderShowCards(list) {
@@ -179,32 +157,16 @@ function renderShowCardDetails(show, card) {
 }
 
 
-function render(episodeList) {
-  renderEpisodeSelect(episodeList);
-  renderSearchLabel(episodeList);
-  renderEpisodeCards(episodeList);
+function renderShowPage(list) {
+  console.log("render show page: ", list);
+  renderHeaderSelectLabel(list);
+  renderHeaderSelect(list);
+  renderEpisodeCards(list);
 }
 
-function renderEpisodeSelect(episodeList) {
-  const selectElement = document.getElementById("episode-select");
-
-  selectElement.options.length = 0;
-
-  episodeList.forEach((episode) => {
-    const code = getEpisodeCode(episode);
-    selectElement.add(new Option(`${code} – ${episode.name || ""}`, code));
-  });
-}
-
-function renderSearchLabel(episodeList) {
-  const label = document.getElementById("search-label");
-  label.textContent = `Displaying ${episodeList.length}/${CACHE.getCurrentShow().length} 
-    episode${episodeList.length > 2 ? "s" : ""}`;
-}
-
-function renderEpisodeCards(episodeList) {
-  document.getElementById("root").innerHTML = "";
-  episodeList.forEach(renderEpisodeCard);
+function renderEpisodeCards(list) {
+  clearRootElement();
+  list.forEach(renderEpisodeCard);
 }
 
 function renderEpisodeCard(episode) {
@@ -212,31 +174,54 @@ function renderEpisodeCard(episode) {
 
   card.querySelector(".episode-card").id = getEpisodeCode(episode);
 
-  renderCardTitle(card, episode);
-  renderCardImage(card, episode);
-  renderCardSummary(card, episode);
-  renderCardLink(card, episode);
+  renderEpisodeCardTitle(card, episode);
+  renderEpisodeCardImage(card, episode);
+  renderEpisodeCardSummary(card, episode);
+  renderEpisodeCardLink(card, episode);
 
   document.getElementById("root").append(card);
 }
 
-function renderCardTitle(card, episode) {
+function renderEpisodeCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
   card.querySelector(".episode-card-title h3").textContent = `${episode.name || ""} - ${code}`;
 }
 
-function renderCardImage(card, episode) {
+function renderEpisodeCardImage(card, episode) {
   const image = card.querySelector(".episode-card-image img");
   image.src = updateProtocol(episode.image.medium || "");
   image.alt = `${episode.name || ""} image`;
 }
 
-function renderCardSummary(card, episode) {
+function renderEpisodeCardSummary(card, episode) {
   card.querySelector(".summary-text").textContent = removeTags(episode.summary || "");
 }
 
-function renderCardLink(card, episode) {
+function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
+}
+//endregion
+
+
+//region event listeners
+function onInputHeaderSelect(event) {
+  document.getElementById(event.target.value).scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
+function onInputHeaderInput(event) {
+  const searchTerm = event.target.value.toLowerCase();
+  const filteredItems = filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm);
+
+  renderCataloguePage(filteredItems);
+}
+
+function onClickShowCard(event) {
+  console.log("on click show card:", event.target.id);
+  CACHE.updateCurrent(event.target.id);
+  setupShowPage();
 }
 //endregion
 
