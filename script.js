@@ -35,7 +35,7 @@ const CACHE = {
   },
 };
 
-let CURRENT_PAGE = PAGE_TYPE_CATALOGUE;
+let current_page_type = PAGE_TYPE_CATALOGUE;
 
 //region prepare
 function setup() {
@@ -53,7 +53,7 @@ function setupHeaderSelect() {
 }
 
 function setupCataloguePage() {
-  CURRENT_PAGE = PAGE_TYPE_CATALOGUE;
+  current_page_type = PAGE_TYPE_CATALOGUE;
   showDataLoadingMessage();
   clearHeaderInput();
 
@@ -71,7 +71,7 @@ function setupCataloguePage() {
 }
 
 function setupShowPage() {
-  CURRENT_PAGE = PAGE_TYPE_SHOW;
+  current_page_type = PAGE_TYPE_SHOW;
   showDataLoadingMessage();
   clearHeaderInput();
 
@@ -180,18 +180,19 @@ function renderEpisodeCardImage(card, episode) {
 }
 
 function renderEpisodeCardSummary(card, episode) {
-  card.querySelector(".summary-text").textContent = removeTags(episode.summary || "");
+  card.querySelector(".summary-text").innerHTML = episode.summary || "";
 }
 
 function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
 }
 
+
 function renderHeaderSelectLabel(list) {
   const selectLabel = document.getElementById("header-select-label");
   let item;
 
-  switch (CURRENT_PAGE) {
+  switch (current_page_type) {
     case PAGE_TYPE_CATALOGUE:
       item = "show";
       break;
@@ -211,7 +212,7 @@ function renderHeaderSelect(list) {
   list.forEach((item) => {
     let value;
 
-    switch (CURRENT_PAGE) {
+    switch (current_page_type) {
       case PAGE_TYPE_CATALOGUE:
         value = item.id;
         break;
@@ -237,7 +238,7 @@ function onInputHeaderSelect(event) {
 function onInputHeaderInput(event) {
   const searchTerm = event.target.value.toLowerCase();
 
-  switch (CURRENT_PAGE) {
+  switch (current_page_type) {
     case PAGE_TYPE_CATALOGUE:
       renderCataloguePage(filterItemsByNameSummaryCode(CACHE.catalogue, searchTerm));
       break;
@@ -275,10 +276,6 @@ function showDataLoadingErrorMessage() {
 
 function getEpisodeCode(episode) {
   return `S${String(episode.season || "").padStart(2, "0")}E${String(episode.number || "").padStart(2, "0")}`;
-}
-
-function removeTags(text) {
-  return text.replace(/<[^>]*>/g, "");
 }
 
 function updateProtocol(url) {
