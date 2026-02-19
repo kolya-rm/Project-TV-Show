@@ -104,6 +104,10 @@ function onInputHeaderInput(event) {
 
   renderCataloguePage(filteredItems);
 }
+
+function onClickShowCard(event) {
+  console.log(event.target.id);
+}
 //endregion
 
 
@@ -134,15 +138,18 @@ function renderShowCards(list) {
 }
 
 function renderShowCard(show) {
-  const card = document.getElementById("show-card-template").content.cloneNode(true);
-  card.querySelector(".show-card").id = show.id || "";
+  const cardFragment = document.getElementById("show-card-template").content.cloneNode(true);
+  const cardElement = cardFragment.querySelector(".show-card")
+  
+  cardElement.id = show.id || "";
+  cardElement.addEventListener("click", onClickShowCard);
 
-  renderShowCardTitle(show, card);
-  renderShowCardImage(show, card);
-  renderShowCardSummary(show, card);
-  renderShowCardDetails(show, card);
+  renderShowCardTitle(show, cardFragment);
+  renderShowCardImage(show, cardFragment);
+  renderShowCardSummary(show, cardFragment);
+  renderShowCardDetails(show, cardFragment);
 
-  document.getElementById("root").appendChild(card);
+  document.getElementById("root").appendChild(cardFragment);
 }
 
 function renderShowCardTitle(show, card) {
