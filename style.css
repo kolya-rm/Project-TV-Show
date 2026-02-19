@@ -23,6 +23,10 @@ header {
   font-size: large;
 }
 
+#header-button-back-img {
+  height: 60px;
+}
+
 #header-input {
   width: 300px;
   height: 30px;

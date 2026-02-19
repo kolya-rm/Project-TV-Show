@@ -39,9 +39,14 @@ let current_page_type = PAGE_TYPE_CATALOGUE;
 
 //region prepare
 function setup() {
+  setupHeaderButton();
   setupHeaderInput();
   setupHeaderSelect();
   setupCataloguePage();
+}
+
+function setupHeaderButton() {
+  document.getElementById("header-button-back-img").addEventListener("click", onClickHeaderButton);
 }
 
 function setupHeaderInput() {
@@ -228,6 +233,10 @@ function renderHeaderSelect(list) {
 
 
 //region event listeners
+function onClickHeaderButton() {
+  setupCataloguePage();
+}
+
 function onInputHeaderSelect(event) {
   document.getElementById(event.target.value).scrollIntoView({
     behavior: "smooth",
