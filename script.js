@@ -8,18 +8,21 @@ const HTTPS_PROTOCOL_PREFIX = "https://";
 const DATA_LOADING_MESSAGE = "Data is fetching. Please wait a moment.";
 const DATA_LOADING_ERROR_MESSAGE = "Connection is lost. Please try again later.";
 
+const PAGE_TYPE_CATALOGUE = "catalogue";
+const PAGE_TYPE_SHOW = "show";
+
 const CACHE = {
-  shows: [],
-  episodes: {},
+  catalogue: [],
+  shows: {},
   current: "",
 
-  addCurrentEpisodes(episodes) {
-    this.episodes[this.current] = episodes;
+  addCurrentShow(episodes) {
+    this.shows[this.current] = episodes;
     return episodes;
   },
 
-  getCurrentEpisodes() {
-    return this.episodes[this.current];
+  getCurrentShow() {
+    return this.shows[this.current];
   },
 
   updateCurrent(current) {
@@ -32,120 +35,131 @@ const CACHE = {
   },
 };
 
+let current_page_type = PAGE_TYPE_CATALOGUE;
 
 //region prepare
 function setup() {
-  setupShowSelect();
-  setupEpisodeSelect();
-  setupSearchInput();
-  setupShowList();
+  setupHeaderButton();
+  setupHeaderInput();
+  setupHeaderSelect();
+  setupCataloguePage();
 }
 
-function setupShowSelect() {
-  document.getElementById("show-select").addEventListener("input", onInputShowSelect);
+function setupHeaderButton() {
+  document.getElementById("header-button-back-img").addEventListener("click", onClickHeaderButton);
 }
 
-function setupEpisodeSelect() {
-  document.getElementById("episode-select").addEventListener("input", onInputEpisodeSelect);
+function setupHeaderInput() {
+  document.getElementById("header-input").addEventListener("input", onInputHeaderInput);
 }
 
-function setupSearchInput() {
-  document.getElementById("search-input").addEventListener("input", onSearchInput);
+function setupHeaderSelect() {
+  document.getElementById("header-select").addEventListener("input", onInputHeaderSelect);
 }
 
-function setupShowList() {
+function setupCataloguePage() {
+  current_page_type = PAGE_TYPE_CATALOGUE;
   showDataLoadingMessage();
+  clearHeaderInput();
 
-  fetch(SHOW_LIST_URL)
-    .then((res) => res.json())
-    .then((data) => {
-      CACHE.shows = data.sort(showComparatorByName);
-      renderShowSelect();
-      document.getElementById("show-select").dispatchEvent(new Event("input"));
-    })
-    .catch(showDataLoadingErrorMessage);
-}
-
-function setupShow() {
-  showDataLoadingMessage();
-
-  fetch(CACHE.getCurrentShowURL())
-    .then((response) => response.json())
-    .then((episodes) => {
-      render(CACHE.addCurrentEpisodes(episodes));
-    })
-    .catch(showDataLoadingErrorMessage);
-}
-//endregion
-
-
-//region event listeners
-function onInputShowSelect(event) {
-  CACHE.updateCurrent(event.target.value);
-  if (CACHE.getCurrentEpisodes()) {
-    render(CACHE.getCurrentEpisodes());
+  if (CACHE.catalogue.length) {
+    renderCataloguePage(CACHE.catalogue);
   } else {
-    setupShow();
+    fetch(SHOW_LIST_URL)
+      .then((response) => response.json())
+      .then((data) => {
+        CACHE.catalogue = data.sort(showComparatorByName);
+        renderCataloguePage(CACHE.catalogue);
+      })
+      .catch(showDataLoadingErrorMessage);
   }
 }
 
-function onInputEpisodeSelect(event) {
-  document.getElementById(event.target.value).scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}
+function setupShowPage() {
+  current_page_type = PAGE_TYPE_SHOW;
+  showDataLoadingMessage();
+  clearHeaderInput();
 
-function onSearchInput(event) {
-  const searchTerm = event.target.value.toLowerCase();
-  const filteredEpisodes = CACHE.getCurrentEpisodes().filter(
-    (episode) =>
-      (episode.name || "").toLowerCase().includes(searchTerm) ||
-      (episode.summary || "").toLowerCase().includes(searchTerm) ||
-      (getEpisodeCode(episode) || "").toLowerCase().includes(searchTerm),
-  );
-
-  render(filteredEpisodes);
+  if (CACHE.getCurrentShow()) {
+    renderShowPage(CACHE.getCurrentShow());
+  } else {
+    fetch(CACHE.getCurrentShowURL())
+      .then((response) => response.json())
+      .then((data) => {
+        CACHE.addCurrentShow(data);
+        renderShowPage(data);
+      })
+      .catch(showDataLoadingErrorMessage);
+  }
 }
 //endregion
 
 
 //region render
-function renderShowSelect() {
-  const select = document.getElementById("show-select");
+function renderCataloguePage(list) {
+  renderHeaderButton();
+  renderHeaderSelectLabel(list);
+  renderHeaderSelect(list);
+  renderShowCards(list);
+}
+
+function renderShowCards(list) {
+  clearRootElement();
+  list.forEach(renderShowCard);
+}
+
+function renderShowCard(show) {
+  const cardFragment = document.getElementById("show-card-template").content.cloneNode(true);
+  const cardElement = cardFragment.querySelector(".show-card")
   
-  select.options.length = 0;
+  cardElement.id = show.id || "";
+  cardElement.addEventListener("click", onClickShowCard);
 
-  CACHE.shows.forEach(show => select.add(new Option(show.name, show.id)));
+  renderShowCardTitle(show, cardFragment);
+  renderShowCardImage(show, cardFragment);
+  renderShowCardSummary(show, cardFragment);
+  renderShowCardDetails(show, cardFragment);
+
+  document.getElementById("root").appendChild(cardFragment);
 }
 
-function render(episodeList) {
-  renderEpisodeSelect(episodeList);
-  renderSearchLabel(episodeList);
-  renderEpisodeCards(episodeList);
+function renderShowCardTitle(show, card) {
+  card.querySelector(".show-card-header h1").textContent = `${show.name || ""}`;
+}
+
+function renderShowCardImage(show, card) {
+  const image = card.querySelector(".show-card-image img");
+
+  image.src = show.image.medium || "";
+  image.alt = `${show.name || ""} cover image`;
+}
+
+function renderShowCardSummary(show, card) {
+  card.querySelector(".show-card-summary").innerHTML = show.summary || "";
+}
+
+function renderShowCardDetails(show, card) {
+  card.querySelector(".show-card-details-rating p").innerHTML =
+    `<b>Rating: </b>${show.rating.average || ""}`;
+  card.querySelector(".show-card-details-genres p").innerHTML =
+    `<b>Genres:  </b>${show.genres.join(" | ") || ""}`;
+  card.querySelector(".show-card-details-status p").innerHTML =
+    `<b>Status:  </b>${show.status || ""}`;
+  card.querySelector(".show-card-details-runtime p").innerHTML =
+    `<b>Runtime:  </b>${show.runtime || ""}`;
 }
 
 
-function renderEpisodeSelect(episodeList) {
-  const selectElement = document.getElementById("episode-select");
-
-  selectElement.options.length = 0;
-
-  episodeList.forEach((episode) => {
-    const code = getEpisodeCode(episode);
-    selectElement.add(new Option(`${code} – ${episode.name || ""}`, code));
-  });
+function renderShowPage(list) {
+  renderHeaderButton();
+  renderHeaderSelectLabel(list);
+  renderHeaderSelect(list);
+  renderEpisodeCards(list);
 }
 
-function renderSearchLabel(episodeList) {
-  const label = document.getElementById("search-label");
-  label.textContent = `Displaying ${episodeList.length}/${CACHE.getCurrentEpisodes().length} 
-    episode${episodeList.length > 2 ? "s" : ""}`;
-}
-
-function renderEpisodeCards(episodeList) {
-  document.getElementById("root").innerHTML = "";
-  episodeList.forEach(renderEpisodeCard);
+function renderEpisodeCards(list) {
+  clearRootElement();
+  list.forEach(renderEpisodeCard);
 }
 
 function renderEpisodeCard(episode) {
@@ -153,31 +167,113 @@ function renderEpisodeCard(episode) {
 
   card.querySelector(".episode-card").id = getEpisodeCode(episode);
 
-  renderCardTitle(card, episode);
-  renderCardImage(card, episode);
-  renderCardSummary(card, episode);
-  renderCardLink(card, episode);
+  renderEpisodeCardTitle(card, episode);
+  renderEpisodeCardImage(card, episode);
+  renderEpisodeCardSummary(card, episode);
+  renderEpisodeCardLink(card, episode);
 
   document.getElementById("root").append(card);
 }
 
-function renderCardTitle(card, episode) {
+function renderEpisodeCardTitle(card, episode) {
   const code = getEpisodeCode(episode);
   card.querySelector(".episode-card-title h3").textContent = `${episode.name || ""} - ${code}`;
 }
 
-function renderCardImage(card, episode) {
+function renderEpisodeCardImage(card, episode) {
   const image = card.querySelector(".episode-card-image img");
   image.src = updateProtocol(episode.image.medium || "");
   image.alt = `${episode.name || ""} image`;
 }
 
-function renderCardSummary(card, episode) {
-  card.querySelector(".summary-text").textContent = removeTags(episode.summary || "");
+function renderEpisodeCardSummary(card, episode) {
+  card.querySelector(".summary-text").innerHTML = episode.summary || "";
 }
 
-function renderCardLink(card, episode) {
+function renderEpisodeCardLink(card, episode) {
   card.querySelector(".summary-link a").href = updateProtocol(episode.url || "");
+}
+
+
+function renderHeaderButton() {
+  headerButton = document.getElementById("header-button-back-img");
+  switch (current_page_type) {
+    case PAGE_TYPE_CATALOGUE:
+      headerButton.style.visibility = "hidden";
+      break;
+    case PAGE_TYPE_SHOW:
+      headerButton.style.visibility = "visible";
+      break;
+  }
+}
+
+function renderHeaderSelectLabel(list) {
+  const selectLabel = document.getElementById("header-select-label");
+  let item;
+
+  switch (current_page_type) {
+    case PAGE_TYPE_CATALOGUE:
+      item = "show";
+      break;
+    case PAGE_TYPE_SHOW:
+      item = "episode";
+      break;
+  }
+
+  selectLabel.textContent = `Found ${list.length} ${item}${list.length === 1 ? "" : "s"}:`;
+}
+
+function renderHeaderSelect(list) {
+  const select = document.getElementById("header-select");
+
+  select.options.length = 0;
+
+  list.forEach((item) => {
+    let value;
+
+    switch (current_page_type) {
+      case PAGE_TYPE_CATALOGUE:
+        value = item.id;
+        break;
+      case PAGE_TYPE_SHOW:
+        value = getEpisodeCode(item);
+        break;
+    }
+
+    select.add(new Option(item.name || "", value || ""));
+  });
+}
+//endregion
+
+
+//region event listeners
+function onClickHeaderButton() {
+  setupCataloguePage();
+}
+
+function onInputHeaderSelect(event) {
+  document.getElementById(event.target.value).scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
+function onInputHeaderInput(event) {
+  const searchTerm = event.target.value.toLowerCase();
+
+  switch (current_page_type) {
+    case PAGE_TYPE_CATALOGUE:
+      renderCataloguePage(filterItemsByNameSummaryGenreCode(CACHE.catalogue, searchTerm));
+      break;
+    case PAGE_TYPE_SHOW:
+      renderShowPage(filterItemsByNameSummaryGenreCode(CACHE.getCurrentShow(), searchTerm));
+      break;
+  }
+}
+
+function onClickShowCard(event) {
+  CACHE.updateCurrent(event.target.id);
+  setupShowPage();
 }
 //endregion
 
@@ -205,10 +301,6 @@ function getEpisodeCode(episode) {
   return `S${String(episode.season || "").padStart(2, "0")}E${String(episode.number || "").padStart(2, "0")}`;
 }
 
-function removeTags(text) {
-  return text.replace(/<[^>]*>/g, "");
-}
-
 function updateProtocol(url) {
   if (url.startsWith(HTTP_PROTOCOL_PREFIX)) {
     return url.replace(HTTP_PROTOCOL_PREFIX, HTTPS_PROTOCOL_PREFIX);
@@ -216,9 +308,28 @@ function updateProtocol(url) {
   return url;
 }
 
+function clearRootElement() {
+  document.getElementById("root").innerHTML = "";
+}
+
+function clearHeaderInput() {
+  document.getElementById("header-input").value = "";
+}
+
 function showComparatorByName(show1, show2) {
   return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
 }
+
+function filterItemsByNameSummaryGenreCode(list, searchTerm) {
+  return list.filter(
+    (item) =>
+      (item.name || "").toLowerCase().includes(searchTerm) ||
+      (item.summary || "").toLowerCase().includes(searchTerm) ||
+      (item.genres.join() || "").toLowerCase().includes(searchTerm) ||
+      (getEpisodeCode(item) || "").toLowerCase().includes(searchTerm),
+  );
+}
 //endregion
+
 
 window.onload = setup;

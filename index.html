@@ -9,19 +9,21 @@
   </head>
   <body>
     <header>
-      <div class="select">
-        <select id="show-select" name="show"></select>
+      <div class="header-element">
+        <img src="/images/btn-back.png" alt="Button back" id="header-button-back-img">
       </div>
-      <div class="select">
-        <select id="episode-select" name="episode"></select>
+      <div class="header-element">
+        <label id="header-input-label" for="search-input">Filtered for:</label>
+        <input id="header-input" name="search-input" placeholder="Enter keyword" />
       </div>
-      <div class="search">
-        <input id="search-input" name="search-input" placeholder="Search episodes..." />
-        <label id="search-label" for="search-input">Search:</label>
+      <div class="header-element">
+        <label id="header-select-label" for="select-select">Found:</label>
+        <select id="header-select" name="select-select"></select>
       </div>
     </header>
     <main>
-      <div id="root"></div>
+      <div id="root">
+      </div>
     </main>
     <footer>
       <p>
@@ -56,7 +58,7 @@
             <p></p>
           </div>
           <div class="show-card-details">
-            <div class="show-card-details-seasons">
+            <div class="show-card-details-rating">
               <p></p>
             </div>
             <div class="show-card-details-genres">
