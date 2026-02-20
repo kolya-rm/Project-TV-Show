@@ -263,10 +263,10 @@ function onInputHeaderInput(event) {
 
   switch (current_page_type) {
     case PAGE_TYPE_CATALOGUE:
-      renderCataloguePage(filterItemsByNameSummaryGenreCode(CACHE.catalogue, searchTerm));
+      renderCataloguePage(filterShowsByNameSummaryGenres(CACHE.catalogue, searchTerm));
       break;
     case PAGE_TYPE_SHOW:
-      renderShowPage(filterItemsByNameSummaryGenreCode(CACHE.getCurrentShow(), searchTerm));
+      renderShowPage(filterEpisodesByNameSummaryCode(CACHE.getCurrentShow(), searchTerm));
       break;
   }
 }
@@ -320,13 +320,21 @@ function showComparatorByName(show1, show2) {
   return show1.name.toLowerCase().localeCompare(show2.name.toLowerCase());
 }
 
-function filterItemsByNameSummaryGenreCode(list, searchTerm) {
-  return list.filter(
-    (item) =>
-      (item.name || "").toLowerCase().includes(searchTerm) ||
-      (item.summary || "").toLowerCase().includes(searchTerm) ||
-      (item.genres.join() || "").toLowerCase().includes(searchTerm) ||
-      (getEpisodeCode(item) || "").toLowerCase().includes(searchTerm),
+function filterShowsByNameSummaryGenres(shows, searchTerm) {
+  return shows.filter(
+    (show) =>
+      (show.name || "").toLowerCase().includes(searchTerm) ||
+      (show.summary || "").toLowerCase().includes(searchTerm) ||
+      (show.genres.join() || "").toLowerCase().includes(searchTerm)
+  );
+}
+
+function filterEpisodesByNameSummaryCode(episodes, searchTerm) {
+  return episodes.filter(
+    (episode) =>
+      (episode.name || "").toLowerCase().includes(searchTerm) ||
+      (episode.summary || "").toLowerCase().includes(searchTerm) ||
+      (getEpisodeCode(episode) || "").toLowerCase().includes(searchTerm)
   );
 }
 //endregion
